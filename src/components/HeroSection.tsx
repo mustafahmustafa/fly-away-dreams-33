@@ -1,8 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const HeroSection = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    // Travelpayouts widget is loaded globally via index.html script
+    // Move the persistent #tpwl-search div (from outside React) into our container
+    const widget = document.getElementById("tpwl-search");
+    if (widget && containerRef.current && !containerRef.current.contains(widget)) {
+      containerRef.current.appendChild(widget);
+    }
   }, []);
 
   return (
