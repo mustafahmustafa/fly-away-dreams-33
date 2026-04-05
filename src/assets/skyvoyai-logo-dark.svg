@@ -1,0 +1,28 @@
+<svg width="320" height="72" viewBox="0 0 320 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0057FF"/>
+      <stop offset="100%" stop-color="#00D4FF"/>
+    </linearGradient>
+  </defs>
+  <!-- Outer glow ring -->
+  <circle cx="36" cy="36" r="29" fill="#0057FF" fill-opacity="0.12"/>
+  <circle cx="36" cy="36" r="29" stroke="#0057FF" stroke-width="1" stroke-opacity="0.4" fill="none"/>
+  <!-- Sky arc - flight path -->
+  <path d="M13 44 Q36 12 59 44" stroke="url(#arcGrad)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <!-- Trail line from origin to plane -->
+  <path d="M18 41 Q30 20 46 23" stroke="#0057FF" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-opacity="0.6"/>
+  <!-- Plane position dot -->
+  <circle cx="46" cy="23" r="3.5" fill="#00D4FF"/>
+  <circle cx="46" cy="23" r="1.8" fill="#FFFFFF" fill-opacity="0.9"/>
+  <!-- AI spark dots below arc -->
+  <circle cx="36" cy="52" r="1.8" fill="#00D4FF" fill-opacity="0.7"/>
+  <circle cx="43" cy="55" r="1.2" fill="#0057FF" fill-opacity="0.6"/>
+  <circle cx="29" cy="55" r="1.2" fill="#0057FF" fill-opacity="0.6"/>
+  <!-- Wordmark -->
+  <text x="78" y="34" font-family="Syne, system-ui, sans-serif" font-weight="800" font-size="28" fill="#FFFFFF" letter-spacing="-0.8">Sky</text>
+  <text x="124" y="34" font-family="Syne, system-ui, sans-serif" font-weight="800" font-size="28" fill="#00D4FF" letter-spacing="-0.8">Voy</text>
+  <text x="170" y="34" font-family="Syne, system-ui, sans-serif" font-weight="800" font-size="28" fill="#3D7FFF" letter-spacing="-0.8">AI</text>
+  <!-- Tagline -->
+  <text x="78" y="52" font-family="DM Sans, system-ui, sans-serif" font-weight="400" font-size="10.5" fill="#8898B4" letter-spacing="2.5">SMART TRAVEL</text>
+</svg>
