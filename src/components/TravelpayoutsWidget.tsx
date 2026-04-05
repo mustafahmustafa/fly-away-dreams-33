@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 const SCRIPT_SRC =
-  "https://tpscr.com/content?currency=usd&trs=515371&shmarker=716584&show_hotels=true&powered_by=true&locale=en&searchUrl=www.aviasales.com%2Fsearch&primary_override=%230057FF&color_button=%230057FF&color_icons=%2300D4FF&dark=%23FFFFFF&light=%230A1228&secondary=%23050A1A&special=%23ba2552&color_focused=%233D7FFF&border_radius=0&plain=true&promo_id=7879&campaign_id=100";
+  "https://tpscr.com/content?currency=usd&trs=515371&shmarker=716584&show_hotels=true&powered_by=true&locale=en&searchUrl=www.aviasales.com%2Fsearch&primary_override=%2332a8dd&color_button=%2332a8dd&color_icons=%2332a8dd&dark=%23262626&light=%23FFFFFF&secondary=%23FFFFFF&special=%23C4C4C4&color_focused=%2332a8dd&border_radius=0&plain=false&promo_id=7879&campaign_id=100";
 
 const TravelpayoutsWidget = () => {
   const containerRef = useRef<HTMLDivElement>(null);
