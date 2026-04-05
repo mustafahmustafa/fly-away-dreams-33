@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import TravelpayoutsWidget from "./components/TravelpayoutsWidget";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Index from "./pages/Index";
@@ -17,16 +16,13 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <TravelpayoutsWidget />
       <Toaster />
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* Admin routes - no navbar/footer */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminDashboard />} />
 
-          {/* Public routes */}
           <Route
             path="*"
             element={
