@@ -1,4 +1,5 @@
 import HeroSection from "../components/HeroSection";
+import TicketsSection from "../components/TicketsSection";
 import TrustBar from "../components/TrustBar";
 import DealsSection from "../components/DealsSection";
 import HowItWorks from "../components/HowItWorks";
@@ -9,6 +10,7 @@ const Index = () => {
   return (
     <div>
       <HeroSection />
+      <TicketsSection />
       <TrustBar />
       <DealsSection />
       <HowItWorks />

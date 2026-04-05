@@ -143,16 +143,58 @@
   color-scheme: light;
 }
 
-/* Reset inherited white text so widget controls remain readable */
 #tpwl-search, #tpwl-tickets {
   color: initial;
 }
 
-/* Ensure all popups / dropdowns / overlays spawned by the widget inherit sane defaults */
 [class*="tpwl"], [id*="tpwl"],
 .tp-datepicker, .tp-calendar, .tp-dropdown,
 div[data-popper-placement], div[role="listbox"],
 div[role="dialog"] {
   color: initial;
   color-scheme: light;
+}
+
+/* ═══ TRAVELPAYOUTS WHITE-LABEL LAYOUT ═══ */
+.tpwl-search__wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tpwl__content {
+  flex: 1 0 auto;
+  max-width: 1240px;
+  min-width: 976px;
+}
+
+.tpwl-tickets__wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 100px;
+}
+
+.tpwl-tickets__wrapper #tpwl-tickets:not(:empty) {
+  margin-bottom: 32px;
+}
+
+@media (max-width: 1175px) {
+  .tpwl__content {
+    max-width: unset;
+    min-width: unset;
+  }
+  .tpwl-search__wrapper {
+    display: block;
+  }
+  .tpwl-tickets__wrapper {
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 389px) {
+  .tpwl__content {
+    max-width: unset;
+    min-width: unset;
+  }
 }
