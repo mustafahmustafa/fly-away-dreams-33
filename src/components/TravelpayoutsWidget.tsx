@@ -1,52 +1,15 @@
-import { useEffect, useState } from "react";
-
-const IFRAME_SRC = "/travelpayouts-widget.html";
-const RESIZE_MESSAGE_TYPE = "travelpayouts-widget:resize";
-const MIN_WIDGET_HEIGHT = 420;
-const MAX_WIDGET_HEIGHT = 960;
+const IFRAME_SRC =
+  "https://tpscr.com/content?currency=usd&trs=515371&shmarker=716584&show_hotels=true&powered_by=true&locale=en&searchUrl=www.aviasales.com%2Fsearch&primary_override=%230057FF&color_button=%230057FF&color_icons=%2300D4FF&dark=%23FFFFFF&light=%230A1228&secondary=%23050A1A&special=%23ba2552&color_focused=%233D7FFF&border_radius=0&plain=true&promo_id=7879&campaign_id=100";
 
 const TravelpayoutsWidget = () => {
-  const [height, setHeight] = useState(MIN_WIDGET_HEIGHT);
-
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) {
-        return;
-      }
-
-      const data = event.data;
-      if (!data || typeof data !== "object" || data.type !== RESIZE_MESSAGE_TYPE) {
-        return;
-      }
-
-      const nextHeight = Number(data.height);
-      if (!Number.isFinite(nextHeight)) {
-        return;
-      }
-
-      const safeHeight = Math.max(
-        MIN_WIDGET_HEIGHT,
-        Math.min(Math.ceil(nextHeight), MAX_WIDGET_HEIGHT),
-      );
-
-      setHeight((currentHeight) =>
-        currentHeight === safeHeight ? currentHeight : safeHeight,
-      );
-    };
-
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, []);
-
   return (
     <div className="relative overflow-hidden rounded-[1.125rem] border border-foreground/10 bg-secondary/30 shadow-[var(--shadow-sky-lg)] backdrop-blur-sm">
       <iframe
         title="SkyVoyAI flights and hotels search"
         src={IFRAME_SRC}
-        className="block w-full border-0 bg-transparent"
-        style={{ height }}
-        loading="eager"
-        referrerPolicy="no-referrer-when-downgrade"
+        className="block w-full border-0"
+        height="600"
+        allowFullScreen
       />
     </div>
   );
