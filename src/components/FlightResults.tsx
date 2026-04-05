@@ -14,6 +14,21 @@ interface FlightResultsProps {
   onBook: (proposalId: string) => void;
 }
 
+function safeString(val: unknown): string {
+  if (typeof val === "string") return val;
+  if (val && typeof val === "object") {
+    const obj = val as Record<string, unknown>;
+    if (typeof obj.en === "string") return obj.en;
+    if (obj.en && typeof obj.en === "object") {
+      const inner = obj.en as Record<string, unknown>;
+      if (typeof inner.default === "string") return inner.default;
+    }
+    const first = Object.values(obj).find((v) => typeof v === "string");
+    if (first) return first as string;
+  }
+  return "";
+}
+
 function formatTime(dateTime: string) {
   if (!dateTime) return "--:--";
   const d = new Date(dateTime);
@@ -111,14 +126,14 @@ const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progr
               <div className="flex items-center gap-3 min-w-[140px]">
                 <img
                   src={`https://img.wway.io/pics/root/${carrierCode}@png?exar=1&rs=fit:40:40`}
-                  alt={airline?.name || carrierCode}
+                  alt={safeString(airline?.name) || carrierCode}
                   className="w-10 h-10 rounded"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = "none";
                   }}
                 />
                 <div>
-                  <p className="text-sm font-medium text-foreground">{airline?.name || carrierCode}</p>
+                  <p className="text-sm font-medium text-foreground">{safeString(airline?.name) || carrierCode}</p>
                   <p className="text-xs text-foreground/40">
                     {firstLeg.operating_carrier_designator?.airline_id}
                     {firstLeg.operating_carrier_designator?.number}
@@ -174,7 +189,7 @@ const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progr
                   ${bestProposal.price?.amount?.toLocaleString() || "—"}
                 </p>
               {agent && (
-                  <p className="text-[10px] text-foreground/40 mt-0.5">via {typeof agent.label === "string" ? agent.label : (agent.label as any)?.en?.default || agent.gate_name}</p>
+                  <p className="text-[10px] text-foreground/40 mt-0.5">via {safeString(agent.label) || agent.gate_name}</p>
                 )}
               </div>
               <Button
