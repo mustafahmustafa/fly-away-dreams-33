@@ -174,7 +174,7 @@ const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progr
                   ${bestProposal.price?.amount?.toLocaleString() || "—"}
                 </p>
               {agent && (
-                  <p className="text-[10px] text-foreground/40 mt-0.5">via {typeof agent.label === "string" ? agent.label : agent.label?.en?.default || agent.gate_name}</p>
+                  <p className="text-[10px] text-foreground/40 mt-0.5">via {typeof agent.label === "string" ? agent.label : (agent.label as any)?.en?.default || agent.gate_name}</p>
                 )}
               </div>
               <Button
