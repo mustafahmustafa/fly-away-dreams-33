@@ -1,0 +1,18 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark background -->
+  <rect width="200" height="200" rx="44" fill="#050A1A"/>
+  <!-- Outer glow ring -->
+  <circle cx="100" cy="100" r="72" fill="#0057FF" fill-opacity="0.12"/>
+  <circle cx="100" cy="100" r="72" stroke="#0057FF" stroke-width="2" stroke-opacity="0.35" fill="none"/>
+  <!-- Sky arc -->
+  <path d="M34 122 Q100 38 166 122" stroke="#00D4FF" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+  <!-- Trail -->
+  <path d="M44 116 Q84 52 128 64" stroke="#0057FF" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-opacity="0.65"/>
+  <!-- Plane dot -->
+  <circle cx="128" cy="64" r="10" fill="#00D4FF"/>
+  <circle cx="128" cy="64" r="5" fill="#FFFFFF" fill-opacity="0.95"/>
+  <!-- AI spark dots -->
+  <circle cx="100" cy="144" r="5" fill="#00D4FF" fill-opacity="0.7"/>
+  <circle cx="116" cy="152" r="3.5" fill="#0057FF" fill-opacity="0.6"/>
+  <circle cx="84" cy="152" r="3.5" fill="#0057FF" fill-opacity="0.6"/>
+</svg>
