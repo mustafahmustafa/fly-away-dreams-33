@@ -10,23 +10,16 @@ interface HeroConfig {
   stats: { num: string; label: string }[];
 }
 
-const WIDGET_SCRIPT_SRC =
-  "https://tpscr.com/content?currency=aed&trs=515371&shmarker=716584&show_hotels=true&powered_by=true&locale=en&searchUrl=www.aviasales.com%2Fsearch&primary_override=%230057FF&color_button=%230057FF&color_icons=%2300D4FF&dark=%23FFFFFF&light=%230A1228&secondary=%23050A1A&special=%23ba255255&color_focused=%233D7FFF&border_radius=0&no_labels=&plain=true&promo_id=7879&campaign_id=100";
-
 const HeroSection = () => {
   const widgetRef = useRef<HTMLDivElement>(null);
   const { data: config } = useSiteConfig<HeroConfig>("hero");
 
   useEffect(() => {
-    if (!widgetRef.current) return;
-    // Avoid duplicate scripts
-    if (widgetRef.current.querySelector("script")) return;
-
-    const script = document.createElement("script");
-    script.src = WIDGET_SCRIPT_SRC;
-    script.async = true;
-    script.charset = "utf-8";
-    widgetRef.current.appendChild(script);
+    const widget = document.getElementById("tp-widget-container");
+    if (widget && widgetRef.current && !widgetRef.current.contains(widget)) {
+      widget.style.display = "";
+      widgetRef.current.appendChild(widget);
+    }
   }, []);
 
   const c = config ?? {
@@ -80,7 +73,7 @@ const HeroSection = () => {
         {c.subtitle}
       </p>
 
-      {/* Travelpayouts booking widget */}
+      {/* Travelpayouts booking widget - portaled from index.html */}
       <div ref={widgetRef} className="animate-fade-up-3 w-full max-w-[860px] mx-auto relative z-10" />
 
       <div className="animate-fade-up-4 flex gap-10 mt-11 relative z-10 flex-wrap justify-center">
