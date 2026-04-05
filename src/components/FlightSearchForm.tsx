@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { Plane, ArrowRightLeft, Users, ChevronDown, Search } from "lucide-react";
+import { format } from "date-fns";
+import { ArrowRightLeft, Users, Search, CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import AirportAutocomplete from "./AirportAutocomplete";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -23,8 +26,8 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
   const [tripType, setTripType] = useState<"oneway" | "roundtrip">("roundtrip");
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
-  const [departDate, setDepartDate] = useState("");
-  const [returnDate, setReturnDate] = useState("");
+  const [departDate, setDepartDate] = useState<Date | undefined>();
+  const [returnDate, setReturnDate] = useState<Date | undefined>();
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
@@ -36,8 +39,8 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
     onSearch({
       origin,
       destination,
-      departDate,
-      returnDate: tripType === "roundtrip" ? returnDate : undefined,
+      departDate: format(departDate, "yyyy-MM-dd"),
+      returnDate: tripType === "roundtrip" && returnDate ? format(returnDate, "yyyy-MM-dd") : undefined,
       adults,
       children,
       infants,
@@ -137,24 +140,58 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
         <div className="flex gap-2 flex-1">
           <div className="flex-1">
             <label className="text-[10px] uppercase tracking-wider text-foreground/40 px-3">Depart</label>
-            <Input
-              type="date"
-              value={departDate}
-              onChange={(e) => setDepartDate(e.target.value)}
-              className="border-foreground/10 bg-secondary/50 h-12"
-              min={new Date().toISOString().split("T")[0]}
-            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full h-12 justify-start text-left font-semibold border-foreground/10 bg-secondary/50",
+                    !departDate && "text-foreground/30"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4 text-foreground/40" />
+                  {departDate ? format(departDate, "MMM d, yyyy") : "Select date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={departDate}
+                  onSelect={setDepartDate}
+                  disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
           </div>
           {tripType === "roundtrip" && (
             <div className="flex-1">
               <label className="text-[10px] uppercase tracking-wider text-foreground/40 px-3">Return</label>
-              <Input
-                type="date"
-                value={returnDate}
-                onChange={(e) => setReturnDate(e.target.value)}
-                className="border-foreground/10 bg-secondary/50 h-12"
-                min={departDate || new Date().toISOString().split("T")[0]}
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full h-12 justify-start text-left font-semibold border-foreground/10 bg-secondary/50",
+                      !returnDate && "text-foreground/30"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4 text-foreground/40" />
+                    {returnDate ? format(returnDate, "MMM d, yyyy") : "Select date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={returnDate}
+                    onSelect={setReturnDate}
+                    disabled={(date) => date < (departDate || new Date(new Date().setHours(0, 0, 0, 0)))}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           )}
         </div>
