@@ -1,8 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const HeroSection = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    // Travelpayouts widget is loaded globally via index.html script
+    const widget = document.getElementById("tpwl-search");
+    if (widget && containerRef.current && !containerRef.current.contains(widget)) {
+      widget.style.display = "";
+      containerRef.current.appendChild(widget);
+    }
   }, []);
 
   return (
@@ -47,7 +53,7 @@ const HeroSection = () => {
       </p>
 
       {/* Travelpayouts Search Widget */}
-      <div id="tpwl-search" className="animate-fade-up-3 w-full max-w-[860px] mx-auto relative z-10" />
+      <div ref={containerRef} className="animate-fade-up-3 w-full max-w-[860px] mx-auto relative z-10" />
 
       {/* Stats */}
       <div className="animate-fade-up-4 flex gap-10 mt-11 relative z-10 flex-wrap justify-center">
