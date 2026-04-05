@@ -11,15 +11,59 @@ interface HeroConfig {
 }
 
 const HeroSection = () => {
-  const widgetRef = useRef<HTMLDivElement>(null);
+  const widgetAnchorRef = useRef<HTMLDivElement>(null);
   const { data: config } = useSiteConfig<HeroConfig>("hero");
 
   useEffect(() => {
-    const widget = document.getElementById("tp-widget-container");
-    if (widget && widgetRef.current && !widgetRef.current.contains(widget)) {
-      widget.style.display = "";
-      widgetRef.current.appendChild(widget);
+    if (!widgetAnchorRef.current) return;
+
+    // The Travelpayouts content widget script renders itself at the end of <body>.
+    // We watch for it and move it into our anchor div.
+    const observer = new MutationObserver(() => {
+      // The widget creates a div with shadow DOM right after the script tag
+      const bodyChildren = document.body.children;
+      for (let i = 0; i < bodyChildren.length; i++) {
+        const el = bodyChildren[i] as HTMLElement;
+        // Skip root, script tags, and known elements
+        if (
+          el.id === "root" ||
+          el.tagName === "SCRIPT" ||
+          el.tagName === "NOSCRIPT" ||
+          el.dataset?.tpMoved === "true" ||
+          el.classList.contains("sonner-toaster") ||
+          el.getAttribute("role") === "region"
+        ) continue;
+
+        // Check if this looks like a TP widget element (has shadow root or is an iframe)
+        if (el.shadowRoot || el.tagName === "IFRAME" || el.querySelector("iframe")) {
+          el.dataset.tpMoved = "true";
+          widgetAnchorRef.current?.appendChild(el);
+          observer.disconnect();
+          return;
+        }
+      }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: false });
+
+    // Also check if it already exists
+    const bodyChildren = document.body.children;
+    for (let i = 0; i < bodyChildren.length; i++) {
+      const el = bodyChildren[i] as HTMLElement;
+      if (
+        el.id === "root" ||
+        el.tagName === "SCRIPT" ||
+        el.tagName === "NOSCRIPT"
+      ) continue;
+      if (el.shadowRoot || el.tagName === "IFRAME" || el.querySelector("iframe")) {
+        el.dataset.tpMoved = "true";
+        widgetAnchorRef.current?.appendChild(el);
+        observer.disconnect();
+        break;
+      }
     }
+
+    return () => observer.disconnect();
   }, []);
 
   const c = config ?? {
@@ -73,8 +117,8 @@ const HeroSection = () => {
         {c.subtitle}
       </p>
 
-      {/* Travelpayouts booking widget - portaled from index.html */}
-      <div ref={widgetRef} className="animate-fade-up-3 w-full max-w-[860px] mx-auto relative z-10" />
+      {/* Travelpayouts booking widget anchor */}
+      <div ref={widgetAnchorRef} className="animate-fade-up-3 w-full max-w-[860px] mx-auto relative z-10" />
 
       <div className="animate-fade-up-4 flex gap-10 mt-11 relative z-10 flex-wrap justify-center">
         {c.stats.map((stat, i) => (
