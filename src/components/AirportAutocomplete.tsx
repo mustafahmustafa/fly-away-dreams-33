@@ -61,10 +61,12 @@ const AirportAutocomplete = ({ value, onChange, placeholder = "City or airport",
   };
 
   const selectPlace = (place: Place) => {
-    const name = place.type === "city"
+    const label = place.type === "city"
       ? `${place.name} (${place.code})`
-      : `${place.name} (${place.code})`;
-    setDisplayValue(name);
+      : place.city_name
+        ? `${place.city_name} (${place.code})`
+        : `${place.name} (${place.code})`;
+    setDisplayValue(label);
     setQuery("");
     setResults([]);
     setOpen(false);
