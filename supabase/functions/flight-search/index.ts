@@ -6,7 +6,6 @@ const corsHeaders = {
 const MARKER = "716584";
 const API_BASE = "https://tickets-api.travelpayouts.com";
 
-// Recursively extract values from sorted keys for MD5 signature
 function extractValues(obj: unknown): string[] {
   if (obj === null || obj === undefined) return [];
   if (typeof obj !== "object") return [String(obj)];
@@ -23,7 +22,6 @@ async function md5(text: string): Promise<string> {
 }
 
 async function generateSignature(token: string, params: Record<string, unknown>): Promise<string> {
-  // Sort top-level keys, extract all values recursively
   const sorted: Record<string, unknown> = {};
   for (const key of Object.keys(params).sort()) {
     sorted[key] = params[key];
@@ -31,6 +29,19 @@ async function generateSignature(token: string, params: Record<string, unknown>)
   const values = extractValues(sorted);
   const signString = [token, ...values].join(":");
   return md5(signString);
+}
+
+function getUserIp(req: Request): string {
+  // Try standard proxy headers for the real user IP
+  const forwarded = req.headers.get("x-forwarded-for");
+  if (forwarded) {
+    const first = forwarded.split(",")[0].trim();
+    if (first && !first.startsWith("127.") && first !== "::1") return first;
+  }
+  const realIp = req.headers.get("x-real-ip");
+  if (realIp && !realIp.startsWith("127.") && realIp !== "::1") return realIp;
+  // Fallback to a public IP (not localhost, as the API prohibits it)
+  return "185.199.108.1";
 }
 
 Deno.serve(async (req) => {
@@ -49,10 +60,11 @@ Deno.serve(async (req) => {
   try {
     const url = new URL(req.url);
     const action = url.searchParams.get("action");
+    const userIp = getUserIp(req);
 
     if (action === "start" && req.method === "POST") {
       const body = await req.json();
-      const { origin, destination, departDate, returnDate, adults = 1, children = 0, infants = 0, tripClass = "Y", userIp, host } = body;
+      const { origin, destination, departDate, returnDate, adults = 1, children = 0, infants = 0, tripClass = "Y" } = body;
 
       if (!origin || !destination || !departDate) {
         return new Response(JSON.stringify({ error: "origin, destination, and departDate are required" }), {
@@ -81,12 +93,14 @@ Deno.serve(async (req) => {
       const signature = await generateSignature(TOKEN, searchBody);
       searchBody.signature = signature;
 
+      console.log("Starting search:", JSON.stringify({ origin, destination, departDate, returnDate, userIp }));
+
       const response = await fetch(`${API_BASE}/search/affiliate/start`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-real-host": host || "skyvoyai.com",
-          "x-user-ip": userIp || "1.1.1.1",
+          "x-real-host": "skyvoyai.com",
+          "x-user-ip": userIp,
           "x-signature": signature,
           "x-affiliate-user-id": TOKEN,
         },
@@ -95,12 +109,14 @@ Deno.serve(async (req) => {
 
       const data = await response.json();
       if (!response.ok) {
+        console.error("Search start failed:", JSON.stringify(data));
         return new Response(JSON.stringify({ error: "Search start failed", details: data }), {
           status: response.status,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
+      console.log("Search started:", data.search_id, "results_url:", data.results_url);
       return new Response(JSON.stringify(data), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
