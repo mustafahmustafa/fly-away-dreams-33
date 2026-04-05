@@ -117,7 +117,7 @@ const TravelpayoutsWidget = () => {
         className="block w-full border-0 bg-transparent"
         style={{ height }}
         loading="eager"
-        sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
         referrerPolicy="no-referrer-when-downgrade"
       />
     </div>
