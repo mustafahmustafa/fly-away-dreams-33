@@ -137,25 +137,133 @@
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
-/* ═══ TRAVELPAYOUTS WIDGET OVERRIDES ═══ */
-#tpwl-search, #tpwl-tickets,
-#tpwl-search *, #tpwl-tickets * {
-  color-scheme: light;
+/* ═══ TRAVELPAYOUTS CONTENT WIDGET OVERRIDES ═══ */
+
+/* Widget wrapper — force dark background to match site */
+.content-widget,
+.content-widget__wrapper,
+[class*="content-widget"] {
+  background: transparent !important;
+  font-family: var(--font-body) !important;
 }
 
-#tpwl-search, #tpwl-tickets {
-  color: initial;
+/* Search form container — glassmorphism card */
+.content-widget form,
+.content-widget .search-form,
+.content-widget [class*="search-form"],
+.content-widget [class*="form-wrapper"] {
+  background: hsl(var(--panel)) !important;
+  border: 1px solid hsl(var(--foreground) / 0.08) !important;
+  border-radius: var(--radius-lg) !important;
+  backdrop-filter: blur(12px);
+  padding: 20px !important;
 }
 
-[class*="tpwl"], [id*="tpwl"],
-.tp-datepicker, .tp-calendar, .tp-dropdown,
-div[data-popper-placement], div[role="listbox"],
-div[role="dialog"] {
-  color: initial;
-  color-scheme: light;
+/* Input fields — dark styled */
+.content-widget input,
+.content-widget select,
+.content-widget [class*="input"],
+.content-widget [class*="field"] input,
+.content-widget [class*="select"] {
+  background: hsl(var(--midnight-soft)) !important;
+  border: 1px solid hsl(var(--foreground) / 0.1) !important;
+  border-radius: var(--radius) !important;
+  color: hsl(var(--foreground)) !important;
 }
 
-/* ═══ TRAVELPAYOUTS WHITE-LABEL LAYOUT ═══ */
+.content-widget input::placeholder {
+  color: hsl(var(--foreground) / 0.35) !important;
+}
+
+.content-widget input:focus,
+.content-widget select:focus {
+  border-color: hsl(var(--primary) / 0.5) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.15) !important;
+}
+
+/* Labels */
+.content-widget label,
+.content-widget [class*="label"] {
+  color: hsl(var(--foreground) / 0.6) !important;
+  font-size: 0.8125rem !important;
+}
+
+/* Search button — match primary style */
+.content-widget button[type="submit"],
+.content-widget [class*="submit"],
+.content-widget [class*="search-btn"],
+.content-widget [class*="button"] {
+  background: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  border: none !important;
+  border-radius: var(--radius) !important;
+  font-weight: 600 !important;
+  font-family: var(--font-display) !important;
+  letter-spacing: 0.01em !important;
+  transition: background 0.2s ease !important;
+}
+
+.content-widget button[type="submit"]:hover,
+.content-widget [class*="submit"]:hover,
+.content-widget [class*="search-btn"]:hover {
+  background: hsl(var(--sky-light)) !important;
+}
+
+/* Tabs (Flights / Hotels) */
+.content-widget [class*="tab"],
+.content-widget [role="tab"] {
+  color: hsl(var(--foreground) / 0.5) !important;
+  border-color: transparent !important;
+  font-family: var(--font-display) !important;
+  transition: color 0.2s, border-color 0.2s !important;
+}
+
+.content-widget [class*="tab--active"],
+.content-widget [class*="tab"][aria-selected="true"],
+.content-widget [role="tab"][aria-selected="true"] {
+  color: hsl(var(--foreground)) !important;
+  border-color: hsl(var(--primary)) !important;
+}
+
+/* Checkboxes & powered-by text */
+.content-widget [class*="checkbox"] {
+  accent-color: hsl(var(--primary)) !important;
+}
+
+.content-widget [class*="powered"],
+.content-widget a[href*="travelpayouts"] {
+  color: hsl(var(--foreground) / 0.2) !important;
+  font-size: 0.7rem !important;
+}
+
+/* Dropdown / calendar popup — force dark scheme */
+.content-widget [class*="dropdown"],
+.content-widget [class*="calendar"],
+.content-widget [class*="picker"],
+.content-widget [class*="popup"],
+.content-widget [class*="autocomplete"] {
+  background: hsl(var(--panel-raised)) !important;
+  border: 1px solid hsl(var(--foreground) / 0.1) !important;
+  border-radius: var(--radius) !important;
+  color: hsl(var(--foreground)) !important;
+  color-scheme: dark !important;
+}
+
+/* Calendar text readability */
+.content-widget [class*="calendar"] *,
+.content-widget [class*="picker"] *,
+.content-widget [class*="dropdown"] * {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Swap icon & misc icons */
+.content-widget [class*="swap"],
+.content-widget [class*="icon"] svg {
+  color: hsl(var(--accent)) !important;
+}
+
+/* ═══ LEGACY TRAVELPAYOUTS WHITE-LABEL LAYOUT (kept for compat) ═══ */
 .tpwl-search__wrapper {
   display: flex;
   align-items: center;
