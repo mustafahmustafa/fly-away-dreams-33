@@ -126,7 +126,7 @@ const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progr
               <div className="flex items-center gap-3 min-w-[140px]">
                 <img
                   src={`https://img.wway.io/pics/root/${carrierCode}@png?exar=1&rs=fit:40:40`}
-                  alt={airline?.name || carrierCode}
+                  alt={safeString(airline?.name) || carrierCode}
                   className="w-10 h-10 rounded"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = "none";
