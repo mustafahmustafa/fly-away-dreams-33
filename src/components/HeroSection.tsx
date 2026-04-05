@@ -2,21 +2,11 @@ import { useEffect, useRef } from "react";
 
 const HeroSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const scriptLoaded = useRef(false);
 
   useEffect(() => {
     const widget = document.getElementById("tpwl-search");
     if (widget && containerRef.current && !containerRef.current.contains(widget)) {
       containerRef.current.appendChild(widget);
-    }
-
-    // Load the TP script only once, after the container is in the DOM
-    if (!scriptLoaded.current && !document.querySelector('script[src*="tpscr.com"]')) {
-      scriptLoaded.current = true;
-      const script = document.createElement("script");
-      script.src = "https://tpscr.com/wl_web/main.js?wl_id=15918";
-      script.async = true;
-      document.body.appendChild(script);
     }
   }, []);
 
