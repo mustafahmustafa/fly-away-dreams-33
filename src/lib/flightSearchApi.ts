@@ -48,7 +48,7 @@ export interface Airline {
 export interface Agent {
   id: number;
   gate_name: string;
-  label: string;
+  label: string | { en?: { default?: string } };
 }
 
 export interface SearchResults {

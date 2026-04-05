@@ -173,8 +173,8 @@ const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progr
                 <p className="text-2xl font-extrabold text-foreground">
                   ${bestProposal.price?.amount?.toLocaleString() || "—"}
                 </p>
-                {agent && (
-                  <p className="text-[10px] text-foreground/40 mt-0.5">via {agent.label || agent.gate_name}</p>
+              {agent && (
+                  <p className="text-[10px] text-foreground/40 mt-0.5">via {typeof agent.label === "string" ? agent.label : (agent.label as any)?.en?.default || agent.gate_name}</p>
                 )}
               </div>
               <Button
