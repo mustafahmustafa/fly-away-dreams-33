@@ -1,7 +1,9 @@
+import { useState, useMemo } from "react";
 import { type Ticket, type FlightLeg, type Airline, type Agent } from "@/lib/flightSearchApi";
 import { Plane, Clock, Luggage } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import FlightFilters, { type FilterState } from "./FlightFilters";
 
 interface FlightResultsProps {
   tickets: Ticket[];
@@ -49,6 +51,66 @@ function formatDuration(departTs: number, arriveTs: number) {
 }
 
 const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progress, error, onBook }: FlightResultsProps) => {
+  const [filters, setFilters] = useState<FilterState>({ maxPrice: null, stops: [], airlines: [], sortBy: "price" });
+
+  // Helper to get ticket metadata
+  const getTicketMeta = (ticket: Ticket) => {
+    const bestProposal = ticket.proposals[0];
+    const allFlightIndexes = ticket.segments.flatMap((s) => s.flights);
+    const legs = allFlightIndexes.map((i) => flightLegs[i]).filter(Boolean);
+    const firstLeg = legs[0];
+    const lastLeg = legs[legs.length - 1];
+    const stops = legs.length - 1;
+    const carrierCode = firstLeg?.operating_carrier_designator?.airline_id || "";
+    const price = bestProposal?.price?.amount ?? Infinity;
+    const duration = firstLeg && lastLeg ? lastLeg.arrival_unix_timestamp - firstLeg.departure_unix_timestamp : Infinity;
+    return { bestProposal, legs, firstLeg, lastLeg, stops, carrierCode, price, duration };
+  };
+
+  // Compute filter options from all tickets
+  const { priceRange, availableStops, availableAirlines } = useMemo(() => {
+    let minP = Infinity, maxP = 0;
+    const stopsSet = new Set<number>();
+    const airlinesMap = new Map<string, string>();
+
+    tickets.forEach((t) => {
+      const meta = getTicketMeta(t);
+      if (meta.price < Infinity) { minP = Math.min(minP, meta.price); maxP = Math.max(maxP, meta.price); }
+      stopsSet.add(meta.stops);
+      if (meta.carrierCode) {
+        const a = airlines[meta.carrierCode];
+        airlinesMap.set(meta.carrierCode, safeString(a?.name) || meta.carrierCode);
+      }
+    });
+
+    return {
+      priceRange: [Math.floor(minP === Infinity ? 0 : minP), Math.ceil(maxP || 1000)] as [number, number],
+      availableStops: [...stopsSet].sort(),
+      availableAirlines: [...airlinesMap].map(([code, name]) => ({ code, name })).sort((a, b) => a.name.localeCompare(b.name)),
+    };
+  }, [tickets, flightLegs, airlines]);
+
+  // Filter & sort
+  const filtered = useMemo(() => {
+    let list = tickets.filter((t) => {
+      const meta = getTicketMeta(t);
+      if (!meta.bestProposal || !meta.firstLeg || !meta.lastLeg) return false;
+      if (filters.maxPrice !== null && meta.price > filters.maxPrice) return false;
+      if (filters.stops.length > 0 && !filters.stops.includes(meta.stops)) return false;
+      if (filters.airlines.length > 0 && !filters.airlines.includes(meta.carrierCode)) return false;
+      return true;
+    });
+
+    list.sort((a, b) => {
+      const ma = getTicketMeta(a), mb = getTicketMeta(b);
+      if (filters.sortBy === "price") return ma.price - mb.price;
+      if (filters.sortBy === "duration") return ma.duration - mb.duration;
+      return (ma.firstLeg?.departure_unix_timestamp ?? 0) - (mb.firstLeg?.departure_unix_timestamp ?? 0);
+    });
+
+    return list;
+  }, [tickets, flightLegs, filters]);
+
   if (error) {
     return (
       <div className="mt-8 text-center py-10 bg-destructive/10 border border-destructive/20 rounded-xl">
@@ -74,13 +136,6 @@ const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progr
 
   if (!searching && tickets.length === 0) return null;
 
-  // Sort tickets by cheapest proposal price
-  const sorted = [...tickets].sort((a, b) => {
-    const priceA = a.proposals[0]?.price?.amount ?? Infinity;
-    const priceB = b.proposals[0]?.price?.amount ?? Infinity;
-    return priceA - priceB;
-  });
-
   return (
     <div className="mt-8 space-y-3">
       {searching && (
@@ -92,13 +147,19 @@ const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progr
         </div>
       )}
 
-      {!searching && (
-        <p className="text-sm text-foreground/50 mb-4">
-          {tickets.length} flight{tickets.length !== 1 ? "s" : ""} found
-        </p>
-      )}
+      <FlightFilters
+        filters={filters}
+        onChange={setFilters}
+        priceRange={priceRange}
+        availableStops={availableStops}
+        availableAirlines={availableAirlines}
+      />
 
-      {sorted.slice(0, 20).map((ticket) => {
+      <p className="text-sm text-foreground/50 mb-4">
+        {filtered.length} of {tickets.length} flight{tickets.length !== 1 ? "s" : ""}
+      </p>
+
+      {filtered.slice(0, 20).map((ticket) => {
         const bestProposal = ticket.proposals[0];
         if (!bestProposal) return null;
 
