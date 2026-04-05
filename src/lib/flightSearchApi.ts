@@ -60,83 +60,50 @@ export interface SearchResults {
   last_update_timestamp: number;
 }
 
-export async function startSearch(params: SearchParams) {
-  const { data, error } = await supabase.functions.invoke("flight-search", {
-    body: {
-      origin: params.origin,
-      destination: params.destination,
-      departDate: params.departDate,
-      returnDate: params.returnDate,
-      adults: params.adults,
-      children: params.children,
-      infants: params.infants,
-      tripClass: params.tripClass,
-      userIp: "8.8.8.8",
-      host: "skyvoyai.com",
-    },
-    headers: { "x-action": "start" },
-  });
-
-  // supabase.functions.invoke doesn't support query params, use manual fetch
-  const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/flight-search?action=start`;
+async function callEdgeFunction(action: string, body: Record<string, unknown>) {
+  const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/flight-search?action=${action}`;
   const resp = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     },
-    body: JSON.stringify({
-      origin: params.origin,
-      destination: params.destination,
-      departDate: params.departDate,
-      returnDate: params.returnDate,
-      adults: params.adults,
-      children: params.children,
-      infants: params.infants,
-      tripClass: params.tripClass,
-      userIp: "8.8.8.8",
-      host: "skyvoyai.com",
-    }),
+    body: JSON.stringify(body),
   });
 
-  if (!resp.ok) throw new Error(`Search start failed: ${resp.status}`);
-  return resp.json() as Promise<{ search_id: string; results_url: string }>;
+  if (!resp.ok && resp.status !== 304) {
+    const text = await resp.text();
+    throw new Error(`API ${action} failed (${resp.status}): ${text}`);
+  }
+
+  return resp.json();
+}
+
+export async function startSearch(params: SearchParams) {
+  return callEdgeFunction("start", {
+    origin: params.origin,
+    destination: params.destination,
+    departDate: params.departDate,
+    returnDate: params.returnDate,
+    adults: params.adults,
+    children: params.children,
+    infants: params.infants,
+    tripClass: params.tripClass,
+  }) as Promise<{ search_id: string; results_url: string }>;
 }
 
 export async function getResults(searchId: string, resultsUrl: string, lastUpdateTimestamp: number) {
-  const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/flight-search?action=results`;
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-    },
-    body: JSON.stringify({
-      searchId,
-      resultsUrl: `https://${resultsUrl}`,
-      lastUpdateTimestamp,
-    }),
-  });
-
-  if (!resp.ok && resp.status !== 304) throw new Error(`Results fetch failed: ${resp.status}`);
-  return resp.json() as Promise<SearchResults & { noNewResults?: boolean }>;
+  return callEdgeFunction("results", {
+    searchId,
+    resultsUrl: resultsUrl.startsWith("http") ? resultsUrl : `https://${resultsUrl}`,
+    lastUpdateTimestamp,
+  }) as Promise<SearchResults & { noNewResults?: boolean }>;
 }
 
 export async function getBookingLink(searchId: string, resultsUrl: string, proposalId: string) {
-  const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/flight-search?action=click`;
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-    },
-    body: JSON.stringify({
-      searchId,
-      resultsUrl: `https://${resultsUrl}`,
-      proposalId,
-    }),
-  });
-
-  if (!resp.ok) throw new Error(`Click failed: ${resp.status}`);
-  return resp.json() as Promise<{ url: string }>;
+  return callEdgeFunction("click", {
+    searchId,
+    resultsUrl: resultsUrl.startsWith("http") ? resultsUrl : `https://${resultsUrl}`,
+    proposalId,
+  }) as Promise<{ url: string }>;
 }
