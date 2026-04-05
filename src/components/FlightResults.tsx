@@ -53,18 +53,18 @@ function formatDuration(departTs: number, arriveTs: number) {
 const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progress, error, onBook }: FlightResultsProps) => {
   const [filters, setFilters] = useState<FilterState>({ maxPrice: null, stops: [], airlines: [], sortBy: "price" });
 
-  // Helper to get ticket metadata
+  // Helper to get metadata for the OUTBOUND segment only (segment 0)
   const getTicketMeta = (ticket: Ticket) => {
     const bestProposal = ticket.proposals[0];
-    const allFlightIndexes = ticket.segments.flatMap((s) => s.flights);
-    const legs = allFlightIndexes.map((i) => flightLegs[i]).filter(Boolean);
-    const firstLeg = legs[0];
-    const lastLeg = legs[legs.length - 1];
-    const stops = legs.length - 1;
+    const outboundFlightIndexes = ticket.segments[0]?.flights || [];
+    const outboundLegs = outboundFlightIndexes.map((i) => flightLegs[i]).filter(Boolean);
+    const firstLeg = outboundLegs[0];
+    const lastLeg = outboundLegs[outboundLegs.length - 1];
+    const stops = outboundLegs.length - 1;
     const carrierCode = firstLeg?.operating_carrier_designator?.airline_id || "";
     const price = bestProposal?.price?.amount ?? Infinity;
     const duration = firstLeg && lastLeg ? lastLeg.arrival_unix_timestamp - firstLeg.departure_unix_timestamp : Infinity;
-    return { bestProposal, legs, firstLeg, lastLeg, stops, carrierCode, price, duration };
+    return { bestProposal, outboundLegs, firstLeg, lastLeg, stops, carrierCode, price, duration };
   };
 
   // Compute filter options from all tickets
@@ -163,18 +163,25 @@ const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progr
         const bestProposal = ticket.proposals[0];
         if (!bestProposal) return null;
 
-        // Get all flight legs for this ticket
-        const allFlightIndexes = ticket.segments.flatMap((s) => s.flights);
-        const legs = allFlightIndexes.map((i) => flightLegs[i]).filter(Boolean);
+        // Use outbound segment only for display
+        const outboundFlightIndexes = ticket.segments[0]?.flights || [];
+        const outboundLegs = outboundFlightIndexes.map((i) => flightLegs[i]).filter(Boolean);
 
-        const firstLeg = legs[0];
-        const lastLeg = legs[legs.length - 1];
+        const firstLeg = outboundLegs[0];
+        const lastLeg = outboundLegs[outboundLegs.length - 1];
         if (!firstLeg || !lastLeg) return null;
 
-        const stops = legs.length - 1;
+        const stops = outboundLegs.length - 1;
         const carrierCode = firstLeg.operating_carrier_designator?.airline_id || "";
         const airline = airlines[carrierCode];
         const agent = agents[String(bestProposal.agent_id)];
+
+        // Check if there's a return segment
+        const hasReturn = ticket.segments.length > 1;
+        const returnFlightIndexes = hasReturn ? (ticket.segments[1]?.flights || []) : [];
+        const returnLegs = returnFlightIndexes.map((i) => flightLegs[i]).filter(Boolean);
+        const returnFirstLeg = returnLegs[0];
+        const returnLastLeg = returnLegs[returnLegs.length - 1];
 
         return (
           <div
@@ -182,65 +189,99 @@ const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progr
             className="flex flex-col md:flex-row items-stretch bg-secondary/30 border border-foreground/10 rounded-xl overflow-hidden hover:border-primary/30 transition-colors"
           >
             {/* Flight info */}
-            <div className="flex-1 p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center gap-4">
-              {/* Airline */}
-              <div className="flex items-center gap-3 min-w-[140px]">
-                <img
-                  src={`https://img.wway.io/pics/root/${carrierCode}@png?exar=1&rs=fit:40:40`}
-                  alt={safeString(airline?.name) || carrierCode}
-                  className="w-10 h-10 rounded"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
-                <div>
-                  <p className="text-sm font-medium text-foreground">{safeString(airline?.name) || carrierCode}</p>
-                  <p className="text-xs text-foreground/40">
-                    {firstLeg.operating_carrier_designator?.airline_id}
-                    {firstLeg.operating_carrier_designator?.number}
-                  </p>
-                </div>
-              </div>
-
-              {/* Times */}
-              <div className="flex items-center gap-4 flex-1">
-                <div className="text-center">
-                  <p className="text-xl font-bold text-foreground">
-                    {formatTime(firstLeg.local_departure_date_time)}
-                  </p>
-                  <p className="text-xs text-foreground/40">{firstLeg.origin}</p>
-                </div>
-
-                <div className="flex-1 flex flex-col items-center px-2">
-                  <p className="text-[10px] text-foreground/40 mb-1">
-                    {formatDuration(firstLeg.departure_unix_timestamp, lastLeg.arrival_unix_timestamp)}
-                  </p>
-                  <div className="w-full flex items-center gap-1">
-                    <div className="h-px flex-1 bg-foreground/20" />
-                    {stops > 0 && (
-                      <span className="text-[10px] text-accent font-medium px-1.5 py-0.5 bg-accent/10 rounded-full">
-                        {stops} stop{stops > 1 ? "s" : ""}
-                      </span>
-                    )}
-                    {stops === 0 && (
-                      <span className="text-[10px] text-green-400 font-medium px-1.5 py-0.5 bg-green-400/10 rounded-full">
-                        Direct
-                      </span>
-                    )}
-                    <div className="h-px flex-1 bg-foreground/20" />
+            <div className="flex-1 p-4 md:p-5 space-y-3">
+              {/* Outbound */}
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                <div className="flex items-center gap-3 min-w-[140px]">
+                  <img
+                    src={`https://img.wway.io/pics/root/${carrierCode}@png?exar=1&rs=fit:40:40`}
+                    alt={safeString(airline?.name) || carrierCode}
+                    className="w-10 h-10 rounded"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{safeString(airline?.name) || carrierCode}</p>
+                    <p className="text-xs text-foreground/40">
+                      {firstLeg.operating_carrier_designator?.airline_id}
+                      {firstLeg.operating_carrier_designator?.number}
+                    </p>
                   </div>
-                  <p className="text-[10px] text-foreground/30 mt-1">
-                    {formatDate(firstLeg.local_departure_date_time)}
-                  </p>
                 </div>
 
-                <div className="text-center">
-                  <p className="text-xl font-bold text-foreground">
-                    {formatTime(lastLeg.local_arrival_date_time)}
-                  </p>
-                  <p className="text-xs text-foreground/40">{lastLeg.destination}</p>
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="text-center">
+                    <p className="text-xl font-bold text-foreground">{formatTime(firstLeg.local_departure_date_time)}</p>
+                    <p className="text-xs text-foreground/40">{firstLeg.origin}</p>
+                  </div>
+                  <div className="flex-1 flex flex-col items-center px-2">
+                    <p className="text-[10px] text-foreground/40 mb-1">
+                      {formatDuration(firstLeg.departure_unix_timestamp, lastLeg.arrival_unix_timestamp)}
+                    </p>
+                    <div className="w-full flex items-center gap-1">
+                      <div className="h-px flex-1 bg-foreground/20" />
+                      {stops > 0 ? (
+                        <span className="text-[10px] text-accent font-medium px-1.5 py-0.5 bg-accent/10 rounded-full">
+                          {stops} stop{stops > 1 ? "s" : ""}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-primary font-medium px-1.5 py-0.5 bg-primary/10 rounded-full">
+                          Direct
+                        </span>
+                      )}
+                      <div className="h-px flex-1 bg-foreground/20" />
+                    </div>
+                    <p className="text-[10px] text-foreground/30 mt-1">{formatDate(firstLeg.local_departure_date_time)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xl font-bold text-foreground">{formatTime(lastLeg.local_arrival_date_time)}</p>
+                    <p className="text-xs text-foreground/40">{lastLeg.destination}</p>
+                  </div>
                 </div>
               </div>
+
+              {/* Return segment */}
+              {hasReturn && returnFirstLeg && returnLastLeg && (
+                <>
+                  <div className="h-px bg-foreground/5" />
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                    <div className="flex items-center gap-3 min-w-[140px]">
+                      <div className="w-10 h-10 flex items-center justify-center text-xs text-foreground/40">↩</div>
+                      <div>
+                        <p className="text-xs text-foreground/50">Return</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="text-center">
+                        <p className="text-lg font-bold text-foreground">{formatTime(returnFirstLeg.local_departure_date_time)}</p>
+                        <p className="text-xs text-foreground/40">{returnFirstLeg.origin}</p>
+                      </div>
+                      <div className="flex-1 flex flex-col items-center px-2">
+                        <p className="text-[10px] text-foreground/40 mb-1">
+                          {formatDuration(returnFirstLeg.departure_unix_timestamp, returnLastLeg.arrival_unix_timestamp)}
+                        </p>
+                        <div className="w-full flex items-center gap-1">
+                          <div className="h-px flex-1 bg-foreground/20" />
+                          {returnLegs.length - 1 > 0 ? (
+                            <span className="text-[10px] text-accent font-medium px-1.5 py-0.5 bg-accent/10 rounded-full">
+                              {returnLegs.length - 1} stop{returnLegs.length - 1 > 1 ? "s" : ""}
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-primary font-medium px-1.5 py-0.5 bg-primary/10 rounded-full">
+                              Direct
+                            </span>
+                          )}
+                          <div className="h-px flex-1 bg-foreground/20" />
+                        </div>
+                        <p className="text-[10px] text-foreground/30 mt-1">{formatDate(returnFirstLeg.local_departure_date_time)}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-lg font-bold text-foreground">{formatTime(returnLastLeg.local_arrival_date_time)}</p>
+                        <p className="text-xs text-foreground/40">{returnLastLeg.destination}</p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Price & book */}
