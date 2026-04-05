@@ -1,23 +1,6 @@
-import { useEffect, useRef } from "react";
-
-const TicketsSection = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const widget = document.getElementById("tpwl-tickets");
-    if (widget && containerRef.current && !containerRef.current.contains(widget)) {
-      widget.style.display = "";
-      containerRef.current.appendChild(widget);
-    }
-  }, []);
-
-  return (
-    <section className="bg-[hsl(var(--midnight))]">
-      <div className="tpwl-tickets__wrapper">
-        <div className="tpwl__content" ref={containerRef} />
-      </div>
-    </section>
-  );
-};
+// The old white-label tickets section is no longer needed
+// since the booking widget is now embedded directly in HeroSection.
+// This component is kept as a no-op for backwards compatibility.
+const TicketsSection = () => null;
 
 export default TicketsSection;
