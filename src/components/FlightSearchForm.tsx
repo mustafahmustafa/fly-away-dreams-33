@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Plane, ArrowRightLeft, Users, ChevronDown, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import AirportAutocomplete from "./AirportAutocomplete";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface FlightSearchFormProps {
