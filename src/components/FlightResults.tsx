@@ -163,18 +163,25 @@ const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progr
         const bestProposal = ticket.proposals[0];
         if (!bestProposal) return null;
 
-        // Get all flight legs for this ticket
-        const allFlightIndexes = ticket.segments.flatMap((s) => s.flights);
-        const legs = allFlightIndexes.map((i) => flightLegs[i]).filter(Boolean);
+        // Use outbound segment only for display
+        const outboundFlightIndexes = ticket.segments[0]?.flights || [];
+        const outboundLegs = outboundFlightIndexes.map((i) => flightLegs[i]).filter(Boolean);
 
-        const firstLeg = legs[0];
-        const lastLeg = legs[legs.length - 1];
+        const firstLeg = outboundLegs[0];
+        const lastLeg = outboundLegs[outboundLegs.length - 1];
         if (!firstLeg || !lastLeg) return null;
 
-        const stops = legs.length - 1;
+        const stops = outboundLegs.length - 1;
         const carrierCode = firstLeg.operating_carrier_designator?.airline_id || "";
         const airline = airlines[carrierCode];
         const agent = agents[String(bestProposal.agent_id)];
+
+        // Check if there's a return segment
+        const hasReturn = ticket.segments.length > 1;
+        const returnFlightIndexes = hasReturn ? (ticket.segments[1]?.flights || []) : [];
+        const returnLegs = returnFlightIndexes.map((i) => flightLegs[i]).filter(Boolean);
+        const returnFirstLeg = returnLegs[0];
+        const returnLastLeg = returnLegs[returnLegs.length - 1];
 
         return (
           <div
