@@ -28,6 +28,8 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
   const [destination, setDestination] = useState("");
   const [departDate, setDepartDate] = useState<Date | undefined>();
   const [returnDate, setReturnDate] = useState<Date | undefined>();
+  const [departOpen, setDepartOpen] = useState(false);
+  const [returnOpen, setReturnOpen] = useState(false);
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
@@ -140,7 +142,7 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
         <div className="flex gap-2 flex-1">
           <div className="flex-1">
             <label className="text-[10px] uppercase tracking-wider text-foreground/40 px-3">Depart</label>
-            <Popover>
+            <Popover open={departOpen} onOpenChange={setDepartOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -157,7 +159,7 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
                 <Calendar
                   mode="single"
                   selected={departDate}
-                  onSelect={setDepartDate}
+                  onSelect={(d) => { setDepartDate(d); setDepartOpen(false); }}
                   disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                   initialFocus
                   className={cn("p-3 pointer-events-auto")}
@@ -168,7 +170,7 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
           {tripType === "roundtrip" && (
             <div className="flex-1">
               <label className="text-[10px] uppercase tracking-wider text-foreground/40 px-3">Return</label>
-              <Popover>
+              <Popover open={returnOpen} onOpenChange={setReturnOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -185,7 +187,7 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
                   <Calendar
                     mode="single"
                     selected={returnDate}
-                    onSelect={setReturnDate}
+                    onSelect={(d) => { setReturnDate(d); setReturnOpen(false); }}
                     disabled={(date) => date < (departDate || new Date(new Date().setHours(0, 0, 0, 0)))}
                     initialFocus
                     className={cn("p-3 pointer-events-auto")}
