@@ -70,7 +70,7 @@ const AirportAutocomplete = ({ value, onChange, placeholder = "City or airport",
     setQuery("");
     setResults([]);
     setOpen(false);
-    onChange(place.code, name);
+    onChange(place.code, label);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
