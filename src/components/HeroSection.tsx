@@ -4,9 +4,9 @@ const HeroSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Move the persistent #tpwl-search div (from outside React) into our container
     const widget = document.getElementById("tpwl-search");
     if (widget && containerRef.current && !containerRef.current.contains(widget)) {
+      widget.style.display = "";
       containerRef.current.appendChild(widget);
     }
   }, []);
