@@ -109,30 +109,31 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
         </div>
       </div>
 
-      {/* Main search row */}
-      <div className="flex flex-col md:flex-row gap-2">
-        <div className="relative flex-1 flex items-center gap-1 min-w-0">
-          <AirportAutocomplete
-            value={origin}
-            onChange={(iata) => setOrigin(iata)}
-            placeholder="Dubai, London..."
-            label="From"
-          />
-          <button
-            type="button"
-            onClick={swapCities}
-            className="mt-4 p-2 rounded-full bg-secondary/80 border border-foreground/10 hover:bg-primary/20 transition-colors"
-          >
-            <ArrowRightLeft className="w-4 h-4 text-foreground/60" />
-          </button>
-          <AirportAutocomplete
-            value={destination}
-            onChange={(iata) => setDestination(iata)}
-            placeholder="Paris, New York..."
-            label="To"
-          />
-        </div>
+      {/* Origin / Destination row */}
+      <div className="flex items-end gap-2">
+        <AirportAutocomplete
+          value={origin}
+          onChange={(iata) => setOrigin(iata)}
+          placeholder="Dubai, London..."
+          label="From"
+        />
+        <button
+          type="button"
+          onClick={swapCities}
+          className="mb-1 p-2 rounded-full bg-secondary/80 border border-foreground/10 hover:bg-primary/20 transition-colors shrink-0"
+        >
+          <ArrowRightLeft className="w-4 h-4 text-foreground/60" />
+        </button>
+        <AirportAutocomplete
+          value={destination}
+          onChange={(iata) => setDestination(iata)}
+          placeholder="Paris, New York..."
+          label="To"
+        />
+      </div>
 
+      {/* Dates + Search row */}
+      <div className="flex flex-col sm:flex-row gap-2">
         <div className="flex gap-2 flex-1">
           <div className="flex-1">
             <label className="text-[10px] uppercase tracking-wider text-foreground/40 px-3">Depart</label>
@@ -140,7 +141,7 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
               type="date"
               value={departDate}
               onChange={(e) => setDepartDate(e.target.value)}
-              className="border-foreground/10 bg-secondary/50"
+              className="border-foreground/10 bg-secondary/50 h-12"
               min={new Date().toISOString().split("T")[0]}
             />
           </div>
@@ -151,7 +152,7 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
                 type="date"
                 value={returnDate}
                 onChange={(e) => setReturnDate(e.target.value)}
-                className="border-foreground/10 bg-secondary/50"
+                className="border-foreground/10 bg-secondary/50 h-12"
                 min={departDate || new Date().toISOString().split("T")[0]}
               />
             </div>
@@ -161,7 +162,7 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
         <Button
           type="submit"
           disabled={loading || !origin || !destination || !departDate}
-          className="mt-4 md:mt-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6"
+          className="sm:mt-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 h-12"
         >
           <Search className="w-5 h-5 mr-2" />
           {loading ? "Searching..." : "Search"}
