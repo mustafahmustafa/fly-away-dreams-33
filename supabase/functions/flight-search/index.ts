@@ -18,11 +18,8 @@ function extractValues(obj: unknown): string[] {
 }
 
 async function md5(text: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(text);
-  const hashBuffer = await crypto.subtle.digest("MD5", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  const { createHash } = await import("node:crypto");
+  return createHash("md5").update(text).digest("hex");
 }
 
 async function generateSignature(token: string, params: Record<string, unknown>): Promise<string> {
