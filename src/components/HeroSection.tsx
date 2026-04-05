@@ -6,7 +6,6 @@ const HeroSection = () => {
   useEffect(() => {
     const widget = document.getElementById("tpwl-search");
     if (widget && containerRef.current && !containerRef.current.contains(widget)) {
-      widget.style.display = "";
       containerRef.current.appendChild(widget);
     }
   }, []);
