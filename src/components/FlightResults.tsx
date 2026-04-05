@@ -1,7 +1,9 @@
+import { useState, useMemo } from "react";
 import { type Ticket, type FlightLeg, type Airline, type Agent } from "@/lib/flightSearchApi";
 import { Plane, Clock, Luggage } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import FlightFilters, { type FilterState } from "./FlightFilters";
 
 interface FlightResultsProps {
   tickets: Ticket[];
