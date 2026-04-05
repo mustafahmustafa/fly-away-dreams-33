@@ -53,18 +53,18 @@ function formatDuration(departTs: number, arriveTs: number) {
 const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progress, error, onBook }: FlightResultsProps) => {
   const [filters, setFilters] = useState<FilterState>({ maxPrice: null, stops: [], airlines: [], sortBy: "price" });
 
-  // Helper to get ticket metadata
+  // Helper to get metadata for the OUTBOUND segment only (segment 0)
   const getTicketMeta = (ticket: Ticket) => {
     const bestProposal = ticket.proposals[0];
-    const allFlightIndexes = ticket.segments.flatMap((s) => s.flights);
-    const legs = allFlightIndexes.map((i) => flightLegs[i]).filter(Boolean);
-    const firstLeg = legs[0];
-    const lastLeg = legs[legs.length - 1];
-    const stops = legs.length - 1;
+    const outboundFlightIndexes = ticket.segments[0]?.flights || [];
+    const outboundLegs = outboundFlightIndexes.map((i) => flightLegs[i]).filter(Boolean);
+    const firstLeg = outboundLegs[0];
+    const lastLeg = outboundLegs[outboundLegs.length - 1];
+    const stops = outboundLegs.length - 1;
     const carrierCode = firstLeg?.operating_carrier_designator?.airline_id || "";
     const price = bestProposal?.price?.amount ?? Infinity;
     const duration = firstLeg && lastLeg ? lastLeg.arrival_unix_timestamp - firstLeg.departure_unix_timestamp : Infinity;
-    return { bestProposal, legs, firstLeg, lastLeg, stops, carrierCode, price, duration };
+    return { bestProposal, outboundLegs, firstLeg, lastLeg, stops, carrierCode, price, duration };
   };
 
   // Compute filter options from all tickets
