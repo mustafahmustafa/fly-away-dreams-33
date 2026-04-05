@@ -50,58 +50,64 @@ export function useFlightSearch(): UseFlightSearchReturn {
       searchMeta.current = { searchId: search_id, resultsUrl: results_url };
       setLoading(false);
 
-      // Poll for results
+      // The API returns flight_legs as a flat array per response.
+      // Tickets reference legs by index into the CUMULATIVE array across all poll responses.
+      // We must track the global offset so ticket indexes remain valid.
+      let globalLegs: FlightLeg[] = [];
+      let allTickets: Ticket[] = [];
+      let allAirlines: Record<string, Airline> = {};
+      let allAgents: Record<string, Agent> = {};
       let lastTimestamp = 0;
       let attempts = 0;
       const maxAttempts = 30;
 
-      const poll = async () => {
-        while (attempts < maxAttempts) {
-          attempts++;
-          setProgress(Math.min(90, (attempts / maxAttempts) * 100));
+      while (attempts < maxAttempts) {
+        attempts++;
+        setProgress(Math.min(90, (attempts / maxAttempts) * 100));
 
-          await new Promise((r) => setTimeout(r, 2000));
+        await new Promise((r) => setTimeout(r, 2000));
 
-          try {
-            const data = await getResults(search_id, results_url, lastTimestamp);
+        try {
+          const data = await getResults(search_id, results_url, lastTimestamp);
 
-            if (data.noNewResults) continue;
+          if (data.noNewResults) continue;
 
-            if (data.flight_legs) {
-              setFlightLegs((prev) => {
-                const existing = new Set(prev.map((l) => l.signature));
-                const newLegs = data.flight_legs.filter((l) => !existing.has(l.signature));
-                return [...prev, ...newLegs];
-              });
-            }
-
-            if (data.tickets) {
-              setTickets((prev) => {
-                const existing = new Set(prev.map((t) => t.id));
-                const newTickets = data.tickets.filter((t) => !existing.has(t.id));
-                return [...prev, ...newTickets];
-              });
-            }
-
-            if (data.airlines) setAirlines((prev) => ({ ...prev, ...data.airlines }));
-            if (data.agents) setAgents((prev) => ({ ...prev, ...data.agents }));
-            if (data.last_update_timestamp) lastTimestamp = data.last_update_timestamp;
-
-            if (data.is_over) {
-              setProgress(100);
-              setSearching(false);
-              return;
-            }
-          } catch {
-            // continue polling on transient errors
+          // Append new flight legs — maintain index alignment
+          if (data.flight_legs && data.flight_legs.length > 0) {
+            globalLegs = [...globalLegs, ...data.flight_legs];
+            setFlightLegs(globalLegs);
           }
+
+          // Append new tickets (they reference the cumulative flight_legs array)
+          if (data.tickets && data.tickets.length > 0) {
+            const existingIds = new Set(allTickets.map((t) => t.id));
+            const newTickets = data.tickets.filter((t) => !existingIds.has(t.id));
+            allTickets = [...allTickets, ...newTickets];
+            setTickets(allTickets);
+          }
+
+          if (data.airlines) {
+            allAirlines = { ...allAirlines, ...data.airlines };
+            setAirlines(allAirlines);
+          }
+          if (data.agents) {
+            allAgents = { ...allAgents, ...data.agents };
+            setAgents(allAgents);
+          }
+          if (data.last_update_timestamp) lastTimestamp = data.last_update_timestamp;
+
+          if (data.is_over) {
+            setProgress(100);
+            setSearching(false);
+            return;
+          }
+        } catch (err) {
+          console.warn("Poll error (retrying):", err);
         }
+      }
 
-        setSearching(false);
-        setProgress(100);
-      };
-
-      await poll();
+      setSearching(false);
+      setProgress(100);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Search failed");
       setLoading(false);
