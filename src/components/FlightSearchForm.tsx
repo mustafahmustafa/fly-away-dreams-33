@@ -111,7 +111,7 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
 
       {/* Main search row */}
       <div className="flex flex-col md:flex-row gap-2">
-        <div className="relative flex-1 flex items-center gap-1">
+        <div className="relative flex-1 flex items-center gap-1 min-w-0">
           <AirportAutocomplete
             value={origin}
             onChange={(iata) => setOrigin(iata)}

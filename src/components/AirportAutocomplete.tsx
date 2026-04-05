@@ -103,7 +103,7 @@ const AirportAutocomplete = ({ value, onChange, placeholder = "City or airport",
   }, []);
 
   return (
-    <div ref={containerRef} className="relative flex-1">
+    <div ref={containerRef} className="relative flex-1 min-w-0">
       <label className="text-[10px] uppercase tracking-wider text-foreground/40 px-3">{label}</label>
       <div className="relative">
         <input
@@ -114,7 +114,7 @@ const AirportAutocomplete = ({ value, onChange, placeholder = "City or airport",
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
           placeholder={placeholder}
-          className="flex h-10 w-full rounded-md border border-foreground/10 bg-secondary/50 px-3 py-2 text-sm font-semibold text-foreground placeholder:text-foreground/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="flex h-10 w-full rounded-md border border-foreground/10 bg-secondary/50 px-3 py-2 text-sm font-semibold text-foreground truncate overflow-hidden text-ellipsis placeholder:text-foreground/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         />
       </div>
 
