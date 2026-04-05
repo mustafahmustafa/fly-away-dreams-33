@@ -41,7 +41,7 @@ export interface Ticket {
 
 export interface Airline {
   iata: string;
-  name: string;
+  name: string | { en?: string; [key: string]: string | undefined };
   is_lowcost?: boolean;
 }
 
