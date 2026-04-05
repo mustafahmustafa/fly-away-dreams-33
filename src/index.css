@@ -137,7 +137,22 @@
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
-/* ═══ TRAVELPAYOUTS WIDGET DARK THEME ═══ */
+/* ═══ TRAVELPAYOUTS WIDGET OVERRIDES ═══ */
+#tpwl-search, #tpwl-tickets,
+#tpwl-search *, #tpwl-tickets * {
+  color-scheme: light;
+}
+
+/* Reset inherited white text so widget controls remain readable */
 #tpwl-search, #tpwl-tickets {
-  color-scheme: dark;
+  color: initial;
+}
+
+/* Ensure all popups / dropdowns / overlays spawned by the widget inherit sane defaults */
+[class*="tpwl"], [id*="tpwl"],
+.tp-datepicker, .tp-calendar, .tp-dropdown,
+div[data-popper-placement], div[role="listbox"],
+div[role="dialog"] {
+  color: initial;
+  color-scheme: light;
 }
