@@ -112,16 +112,12 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
       {/* Main search row */}
       <div className="flex flex-col md:flex-row gap-2">
         <div className="relative flex-1 flex items-center gap-1">
-          <div className="flex-1">
-            <label className="text-[10px] uppercase tracking-wider text-foreground/40 px-3">From</label>
-            <Input
-              value={origin}
-              onChange={(e) => setOrigin(e.target.value.toUpperCase().slice(0, 3))}
-              placeholder="DXB"
-              className="border-foreground/10 bg-secondary/50 text-lg font-semibold uppercase tracking-wider"
-              maxLength={3}
-            />
-          </div>
+          <AirportAutocomplete
+            value={origin}
+            onChange={(iata) => setOrigin(iata)}
+            placeholder="Dubai, London..."
+            label="From"
+          />
           <button
             type="button"
             onClick={swapCities}
@@ -129,16 +125,12 @@ const FlightSearchForm = ({ onSearch, loading }: FlightSearchFormProps) => {
           >
             <ArrowRightLeft className="w-4 h-4 text-foreground/60" />
           </button>
-          <div className="flex-1">
-            <label className="text-[10px] uppercase tracking-wider text-foreground/40 px-3">To</label>
-            <Input
-              value={destination}
-              onChange={(e) => setDestination(e.target.value.toUpperCase().slice(0, 3))}
-              placeholder="LHR"
-              className="border-foreground/10 bg-secondary/50 text-lg font-semibold uppercase tracking-wider"
-              maxLength={3}
-            />
-          </div>
+          <AirportAutocomplete
+            value={destination}
+            onChange={(iata) => setDestination(iata)}
+            placeholder="Paris, New York..."
+            label="To"
+          />
         </div>
 
         <div className="flex gap-2 flex-1">
