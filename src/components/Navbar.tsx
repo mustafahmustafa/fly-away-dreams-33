@@ -23,7 +23,7 @@ const Navbar = () => {
   const links = rawLinks.map((link) => ({ ...link, path: pathMap[link.label] ?? link.path }));
   const c = { links, cta_text: config?.cta_text ?? "Book a trip" };
 
-  const handleSearch = (params: Parameters<typeof searchFlights>[0]) => {
+  const handleSearch = () => {
     setOpen(false);
     navigate("/");
     setTimeout(() => {
@@ -72,7 +72,7 @@ const Navbar = () => {
             <h2 className="font-display text-2xl font-extrabold text-foreground tracking-tight mb-6">
               Search Flights
             </h2>
-            <FlightSearchForm onSearch={handleSearch} loading={loading} />
+            <FlightSearchForm onSearch={handleSearch} loading={false} />
           </div>
         </DialogContent>
       </Dialog>
