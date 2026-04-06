@@ -5,9 +5,43 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { useSiteConfig } from "@/hooks/useSiteConfig";
+
+interface HotelsPageConfig {
+  header_label: string;
+  title: string;
+  subtitle: string;
+  search_label: string;
+  search_placeholder: string;
+  city_label: string;
+  trending_label: string;
+  trending_title: string;
+  results_label: string;
+  no_results_text: string;
+  book_cta: string;
+  price_label: string;
+  price_suffix: string;
+  currency: string;
+}
+
+const defaultConfig: HotelsPageConfig = {
+  header_label: "Accommodation",
+  title: "Find Your Perfect Hotel",
+  subtitle: "Discover handpicked luxury hotels across top destinations",
+  search_label: "Search",
+  search_placeholder: "Hotel name, city, or country...",
+  city_label: "City",
+  trending_label: "Trending stays",
+  trending_title: "Recommended Hotels",
+  results_label: "Search results",
+  no_results_text: "No hotels found",
+  book_cta: "Book",
+  price_label: "From",
+  price_suffix: "/ night",
+  currency: "AED",
+};
 
 function getCityImageUrl(city: string): string {
-  // Map to IATA-like codes for Aviasales CDN
   const cityMap: Record<string, string> = {
     Dubai: "DXB", London: "LON", Paris: "PAR", Bangkok: "BKK",
     Istanbul: "IST", Tokyo: "TYO", Singapore: "SIN", "New York": "NYC",
@@ -27,6 +61,9 @@ function buildBookingLink(hotel: HotelResult) {
 }
 
 const Hotels = () => {
+  const { data: config } = useSiteConfig<HotelsPageConfig>("hotels_page");
+  const c = config ?? defaultConfig;
+
   const [query, setQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
@@ -62,13 +99,13 @@ const Hotels = () => {
         {/* Header */}
         <div className="mb-8">
           <div className="text-[11px] font-semibold text-sky-light tracking-[0.1em] uppercase mb-2">
-            Accommodation
+            {c.header_label}
           </div>
           <h1 className="font-display text-[36px] md:text-[42px] font-extrabold text-foreground tracking-[-1px] leading-tight">
-            Find Your Perfect Hotel
+            {c.title}
           </h1>
           <p className="text-sm text-foreground/40 mt-1">
-            Discover handpicked luxury hotels across top destinations
+            {c.subtitle}
           </p>
         </div>
 
@@ -77,7 +114,7 @@ const Hotels = () => {
           <div className="flex flex-wrap gap-3 items-end">
             <div className="flex-1 min-w-[200px]">
               <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">
-                Search
+                {c.search_label}
               </label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/30" />
@@ -86,7 +123,7 @@ const Hotels = () => {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  placeholder="Hotel name, city, or country..."
+                  placeholder={c.search_placeholder}
                   className="w-full pl-9 pr-3 py-2.5 bg-background border border-border rounded-xl text-sm text-foreground placeholder:text-foreground/30 outline-none focus:border-primary transition-colors"
                 />
               </div>
@@ -94,7 +131,7 @@ const Hotels = () => {
 
             <div className="w-[160px]">
               <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-1.5 block">
-                City
+                {c.city_label}
               </label>
               <Select value={selectedCity} onValueChange={setSelectedCity}>
                 <SelectTrigger className="h-[42px] bg-background border-border rounded-xl text-sm">
@@ -102,8 +139,8 @@ const Hotels = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All cities</SelectItem>
-                  {cities.map((c) => (
-                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  {cities.map((ci) => (
+                    <SelectItem key={ci} value={ci}>{ci}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -125,7 +162,7 @@ const Hotels = () => {
               ) : (
                 <Search className="w-4 h-4" />
               )}
-              Search
+              {c.search_label}
             </Button>
 
             {hasSearched && (
@@ -139,7 +176,7 @@ const Hotels = () => {
             <div className="mt-4 pt-4 border-t border-border">
               <div className="max-w-[300px]">
                 <label className="text-xs font-semibold text-foreground/60 uppercase tracking-wider mb-2 block">
-                  Max Price: AED {maxPrice[0] === 0 ? "Any" : maxPrice[0].toLocaleString()}
+                  Max Price: {c.currency} {maxPrice[0] === 0 ? "Any" : maxPrice[0].toLocaleString()}
                 </label>
                 <Slider
                   min={0}
@@ -150,7 +187,7 @@ const Hotels = () => {
                 />
                 <div className="flex justify-between text-[10px] text-foreground/30 mt-1">
                   <span>Any</span>
-                  <span>AED 5,000</span>
+                  <span>{c.currency} 5,000</span>
                 </div>
               </div>
             </div>
@@ -161,12 +198,12 @@ const Hotels = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <div className="text-[11px] font-semibold text-sky-light tracking-[0.1em] uppercase mb-2">
-              {hasSearched ? "Search results" : "Trending stays"}
+              {hasSearched ? c.results_label : c.trending_label}
             </div>
             <h2 className="font-display text-[28px] font-extrabold text-foreground tracking-[-0.5px]">
               {hasSearched
                 ? `${displayHotels.length} hotel${displayHotels.length !== 1 ? "s" : ""} found`
-                : "Recommended Hotels"}
+                : c.trending_title}
             </h2>
           </div>
         </div>
@@ -187,7 +224,7 @@ const Hotels = () => {
             : displayHotels.length === 0 ? (
                 <div className="col-span-full text-center py-16">
                   <Building2 className="w-12 h-12 mx-auto mb-3 text-foreground/20" />
-                  <p className="text-foreground/40 text-lg">No hotels found</p>
+                  <p className="text-foreground/40 text-lg">{c.no_results_text}</p>
                   {hasSearched && (
                     <Button variant="ghost" onClick={clearFilters} className="mt-3 text-primary">
                       Clear filters
@@ -233,14 +270,14 @@ const Hotels = () => {
                   <div className="p-3.5 px-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-[11px] text-foreground/35 mb-0.5">From</div>
+                        <div className="text-[11px] text-foreground/35 mb-0.5">{c.price_label}</div>
                         <div className="font-display text-[20px] font-extrabold text-foreground">
-                          AED {hotel.priceFrom.toLocaleString()}
-                          <span className="text-[12px] font-normal text-foreground/40"> / night</span>
+                          {c.currency} {hotel.priceFrom.toLocaleString()}
+                          <span className="text-[12px] font-normal text-foreground/40"> {c.price_suffix}</span>
                         </div>
                       </div>
                       <span className="flex items-center gap-1 bg-primary text-primary-foreground rounded-full text-[13px] font-medium px-4 py-2 transition-colors group-hover:bg-sky-light">
-                        Book <ArrowRight className="w-3.5 h-3.5" />
+                        {c.book_cta} <ArrowRight className="w-3.5 h-3.5" />
                       </span>
                     </div>
                   </div>
