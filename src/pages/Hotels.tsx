@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useHotelSearch, usePopularHotels, useHotelCities, HotelResult } from "@/hooks/useHotelSearch";
 import { Search, Star, MapPin, ArrowRight, Building2, SlidersHorizontal, X } from "lucide-react";
+import HotelSearchAutocomplete from "@/components/HotelSearchAutocomplete";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
