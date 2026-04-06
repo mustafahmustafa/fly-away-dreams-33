@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { usePriceCalendar } from "@/hooks/usePriceCalendar";
-import { AirportAutocomplete } from "@/components/AirportAutocomplete";
+import AirportAutocomplete from "@/components/AirportAutocomplete";
 import { ChevronLeft, ChevronRight, Plane, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameMonth } from "date-fns";
