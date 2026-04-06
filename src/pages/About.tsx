@@ -30,6 +30,45 @@ const faqs = [
 const About = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "", lastName: "", email: "", subject: "", message: "",
+  });
+
+  const handleSubmit = async () => {
+    if (!formData.firstName || !formData.email || !formData.message) {
+      toast.error("Please fill in your name, email, and message.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const id = crypto.randomUUID();
+      // Send notification to info@skyvoyai.com
+      await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "contact-notification",
+          recipientEmail: formData.email,
+          idempotencyKey: `contact-notify-${id}`,
+          templateData: formData,
+        },
+      });
+      // Send confirmation to the sender
+      await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "contact-confirmation",
+          recipientEmail: formData.email,
+          idempotencyKey: `contact-confirm-${id}`,
+          templateData: { firstName: formData.firstName },
+        },
+      });
+      setFormSubmitted(true);
+    } catch (err) {
+      console.error("Failed to send email:", err);
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div>
