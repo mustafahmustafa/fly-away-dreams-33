@@ -53,7 +53,7 @@ const PriceCalendar = () => {
     const d = dateStr.replace(/-/g, "");
     const day = d.slice(6, 8);
     const month = d.slice(4, 6);
-    return `https://www.aviasales.com/search/${origin}${day}${month}${destination}1`;
+    return `https://aviasales.tpx.lu/xAVufDUr?shmarker=515371&search_url=${encodeURIComponent(`/search/${origin}${day}${month}${destination}1`)}`;
   };
 
   const hasData = origin && destination;
