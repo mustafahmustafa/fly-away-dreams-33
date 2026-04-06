@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAdmin } from "@/hooks/useAdmin";
-import { useSiteConfig, useUpdateSiteConfig } from "@/hooks/useSiteConfig";
 import SkyVoyLogo from "@/components/SkyVoyLogo";
-import { toast } from "sonner";
+import SectionFormEditor from "@/components/admin/SectionFormEditor";
 
 const SECTIONS = [
   { key: "hero", label: "Hero Section" },
