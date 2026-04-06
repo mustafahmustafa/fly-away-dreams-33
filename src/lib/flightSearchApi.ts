@@ -32,8 +32,8 @@ export interface Ticket {
   proposals: {
     id: string;
     agent_id: number;
-    price: { currency: string; amount: number };
-    price_per_person?: { currency: string; amount: number };
+    price: { currency_code: string; value: number };
+    price_per_person?: { currency_code: string; value: number };
     flight_terms?: Record<string, { baggage?: { count?: number; total_weight?: number }; handbags?: { count?: number } }>;
   }[];
   signature: string;

@@ -62,7 +62,7 @@ const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progr
     const lastLeg = outboundLegs[outboundLegs.length - 1];
     const stops = outboundLegs.length - 1;
     const carrierCode = firstLeg?.operating_carrier_designator?.airline_id || "";
-    const price = bestProposal?.price?.amount ?? Infinity;
+    const price = bestProposal?.price?.value ?? Infinity;
     const duration = firstLeg && lastLeg ? lastLeg.arrival_unix_timestamp - firstLeg.departure_unix_timestamp : Infinity;
     return { bestProposal, outboundLegs, firstLeg, lastLeg, stops, carrierCode, price, duration };
   };
@@ -288,7 +288,7 @@ const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progr
             <div className="flex md:flex-col items-center justify-between md:justify-center gap-2 p-4 md:p-5 md:border-l border-t md:border-t-0 border-foreground/10 bg-secondary/20 min-w-[160px]">
               <div className="text-center">
                 <p className="text-2xl font-extrabold text-foreground">
-                  ${bestProposal.price?.amount?.toLocaleString() || "—"}
+                  ${bestProposal.price?.value?.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) || "—"}
                 </p>
               {agent && (
                   <p className="text-[10px] text-foreground/40 mt-0.5">via {safeString(agent.label) || agent.gate_name}</p>
