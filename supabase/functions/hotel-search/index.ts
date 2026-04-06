@@ -3,7 +3,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const HOTELLOOK_BASE = "http://engine.hotellook.com/api/v2";
+const HOTELLOOK_BASE = "https://engine.hotellook.com/api/v2";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
