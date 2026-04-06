@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const values = [
   { icon: "🤖", name: "AI-first thinking", desc: "Every feature starts with the question: how can AI make this better for the traveller?" },
