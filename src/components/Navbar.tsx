@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSiteConfig } from "@/hooks/useSiteConfig";
-import { useFlightSearch } from "@/hooks/useFlightSearch";
 import SkyVoyLogo from "./SkyVoyLogo";
 import FlightSearchForm from "./FlightSearchForm";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -17,7 +16,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const { data: config } = useSiteConfig<NavbarConfig>("navbar");
-  const { searchFlights, loading } = useFlightSearch();
 
   const defaultLinks = [{ label: "Flights", path: "/" }, { label: "Hotels", path: "/hotels" }, { label: "Deals", path: "/deals" }, { label: "About", path: "/about" }];
   const pathMap: Record<string, string> = { Flights: "/", Hotels: "/hotels", Deals: "/deals", About: "/about" };
