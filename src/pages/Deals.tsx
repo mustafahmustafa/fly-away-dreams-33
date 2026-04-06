@@ -90,7 +90,7 @@ const Deals = () => {
 
   const buildBookingUrl = (link: string) => {
     if (!link) return "#";
-    return `https://www.aviasales.com${link}`;
+    return `https://aviasales.tpx.lu/xAVufDUr?shmarker=515371&search_url=${encodeURIComponent(link)}`;
   };
 
   return (

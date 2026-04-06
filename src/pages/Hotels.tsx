@@ -57,7 +57,7 @@ function formatStars(count: number) {
 }
 
 function buildBookingLink(hotel: HotelResult) {
-  return `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(hotel.name + " " + hotel.city)}&checkin=&checkout=`;
+  return `https://aviasales.tpx.lu/xAVufDUr?shmarker=515371&search_url=${encodeURIComponent(`/hotels?q=${hotel.name} ${hotel.city}`)}`;
 }
 
 const Hotels = () => {
