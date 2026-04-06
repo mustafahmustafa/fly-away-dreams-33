@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useSiteConfig } from "@/hooks/useSiteConfig";
+import { useFlightSearch } from "@/hooks/useFlightSearch";
 import SkyVoyLogo from "./SkyVoyLogo";
 import FlightSearchForm from "./FlightSearchForm";
+import FlightResults from "./FlightResults";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
@@ -13,23 +15,16 @@ interface NavbarConfig {
 
 const Navbar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const { data: config } = useSiteConfig<NavbarConfig>("navbar");
+  const { loading, searching, progress, tickets, flightLegs, airlines, agents, error, search, bookTicket } =
+    useFlightSearch();
 
   const defaultLinks = [{ label: "Flights", path: "/" }, { label: "Hotels", path: "/hotels" }, { label: "Deals", path: "/deals" }, { label: "About", path: "/about" }];
   const pathMap: Record<string, string> = { Flights: "/", Hotels: "/hotels", Deals: "/deals", About: "/about" };
   const rawLinks = config?.links ?? defaultLinks;
   const links = rawLinks.map((link) => ({ ...link, path: pathMap[link.label] ?? link.path }));
   const c = { links, cta_text: config?.cta_text ?? "Book a trip" };
-
-  const handleSearch = () => {
-    setOpen(false);
-    navigate("/");
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 100);
-  };
 
   return (
     <>
@@ -64,7 +59,7 @@ const Navbar = () => {
       </nav>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-[900px] w-[95vw] bg-card border-border p-0 gap-0 overflow-hidden">
+        <DialogContent className="max-w-[900px] w-[95vw] max-h-[85vh] overflow-y-auto bg-card border-border p-0 gap-0">
           <VisuallyHidden>
             <DialogTitle>Search Flights</DialogTitle>
           </VisuallyHidden>
@@ -72,7 +67,17 @@ const Navbar = () => {
             <h2 className="font-display text-2xl font-extrabold text-foreground tracking-tight mb-6">
               Search Flights
             </h2>
-            <FlightSearchForm onSearch={handleSearch} loading={false} />
+            <FlightSearchForm onSearch={search} loading={loading} />
+            <FlightResults
+              tickets={tickets}
+              flightLegs={flightLegs}
+              airlines={airlines}
+              agents={agents}
+              searching={searching}
+              progress={progress}
+              error={error}
+              onBook={bookTicket}
+            />
           </div>
         </DialogContent>
       </Dialog>
