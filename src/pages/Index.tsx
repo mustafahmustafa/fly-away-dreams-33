@@ -14,6 +14,7 @@ const Index = () => {
       <TicketsSection />
       <TrustBar />
       <DealsSection />
+      <PriceCalendar />
       <HowItWorks />
       <FeaturesSection />
       <CTASection />
