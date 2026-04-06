@@ -118,12 +118,21 @@ const Hotels = () => {
                 {c.search_label}
               </label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/30" />
-                <input
-                  type="text"
+                <HotelSearchAutocomplete
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  onChange={setQuery}
+                  onSelect={(s) => {
+                    setQuery(s.label);
+                    if (s.type === "city") {
+                      setSelectedCity(s.value);
+                    }
+                    setHasSearched(true);
+                    searchHotels({
+                      query: s.type === "hotel" ? s.value : undefined,
+                      city: s.type === "city" ? s.value : undefined,
+                      maxPrice: maxPrice[0] > 0 ? maxPrice[0] : undefined,
+                    });
+                  }}
                   placeholder={c.search_placeholder}
                   className="w-full pl-9 pr-3 py-2.5 bg-background border border-border rounded-xl text-sm text-foreground placeholder:text-foreground/30 outline-none focus:border-primary transition-colors"
                 />
