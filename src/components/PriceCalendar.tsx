@@ -118,6 +118,12 @@ const PriceCalendar = () => {
             <Loader2 className="w-8 h-8 mx-auto animate-spin text-primary" />
             <p className="text-sm text-foreground/40 mt-2">Loading prices…</p>
           </div>
+        ) : allValues.length === 0 ? (
+          <div className="text-center py-16 text-foreground/40">
+            <Plane className="w-10 h-10 mx-auto mb-3 opacity-40" />
+            <p className="text-sm">No price data available for this month</p>
+            <p className="text-xs mt-1 text-foreground/30">Try a different month or a more popular route (e.g. DXB → LHR)</p>
+          </div>
         ) : (
           <div>
             {/* Day headers */}
