@@ -12,6 +12,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import Deals from "./pages/Deals";
 import Hotels from "./pages/Hotels";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
                   <Route path="/deals" element={<Deals />} />
                   <Route path="/hotels" element={<Hotels />} />
                   <Route path="/about" element={<About />} />
+                  <Route path="/unsubscribe" element={<Unsubscribe />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <Footer />
