@@ -1,6 +1,7 @@
 import { useDealsData } from "@/hooks/useDealsData";
 import { useSiteConfig } from "@/hooks/useSiteConfig";
 import { Plane, Clock, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface DealsConfig {
@@ -52,9 +53,9 @@ const DealsSection = () => {
               <p className="text-xs text-foreground/40 mt-1">Departing from {origin}</p>
             )}
           </div>
-          <a href="#" className="text-[13px] font-medium text-sky-light no-underline border-b border-sky-light/30 pb-px transition-colors hover:border-sky-light whitespace-nowrap mb-1">
+          <Link to="/deals" className="text-[13px] font-medium text-sky-light no-underline border-b border-sky-light/30 pb-px transition-colors hover:border-sky-light whitespace-nowrap mb-1">
             {c.view_all_text}
-          </a>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
