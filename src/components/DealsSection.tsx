@@ -9,19 +9,10 @@ interface DealsConfig {
   view_all_text: string;
 }
 
-// City gradient backgrounds for visual appeal
-const CITY_GRADIENTS: Record<string, string> = {
-  London: "linear-gradient(160deg, #2c3e50 0%, #4a4a4a 50%, #7f8c8d 100%)",
-  Paris: "linear-gradient(160deg, #2c2c54 0%, #706fd3 50%, #f8c291 100%)",
-  Istanbul: "linear-gradient(160deg, #b33939 0%, #cd6133 50%, #e58e26 100%)",
-  Bangkok: "linear-gradient(160deg, #1e3c72 0%, #2a5298 50%, #e8b04b 100%)",
-  Cairo: "linear-gradient(160deg, #b8860b 0%, #d4a017 40%, #c19a3e 100%)",
-  Maldives: "linear-gradient(160deg, #006994 0%, #00b4d8 50%, #48cae4 100%)",
-  Mumbai: "linear-gradient(160deg, #e65100 0%, #ff8f00 50%, #ffc107 100%)",
-  "Kuala Lumpur": "linear-gradient(160deg, #1a237e 0%, #283593 50%, #42a5f5 100%)",
-};
-
-const DEFAULT_GRADIENT = "linear-gradient(160deg, #1a3a5c 0%, #2d6a9f 40%, #c8a96e 100%)";
+// City photo from Aviasales CDN
+function getCityImageUrl(iataCode: string): string {
+  return `https://img.avs.io/explore/cities/${iataCode}?rs:fill:960:720`;
+}
 
 function formatDuration(minutes: number): string {
   const h = Math.floor(minutes / 60);
