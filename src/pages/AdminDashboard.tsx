@@ -14,6 +14,8 @@ const SECTIONS = [
   { key: "trust_bar", label: "Trust Bar" },
   { key: "navbar", label: "Navbar" },
   { key: "footer", label: "Footer" },
+  { key: "about", label: "About Page" },
+  { key: "hotels_page", label: "Hotels Page" },
 ];
 
 const AdminDashboard = () => {
