@@ -232,20 +232,20 @@ const About = () => {
                 <div className="grid grid-cols-2 gap-3.5 mb-3.5">
                   <div className="flex flex-col gap-[7px]">
                     <label className="text-[11px] font-medium text-foreground/45 tracking-wider uppercase">First name</label>
-                    <input type="text" placeholder="Your first name" className="w-full bg-foreground/[0.04] border border-foreground/10 rounded-lg py-3 px-3.5 font-body text-sm text-foreground placeholder:text-foreground/25 outline-none transition-all focus:border-primary/50 focus:bg-primary/[0.05]" />
+                    <input type="text" placeholder="Your first name" value={formData.firstName} onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))} className="w-full bg-foreground/[0.04] border border-foreground/10 rounded-lg py-3 px-3.5 font-body text-sm text-foreground placeholder:text-foreground/25 outline-none transition-all focus:border-primary/50 focus:bg-primary/[0.05]" />
                   </div>
                   <div className="flex flex-col gap-[7px]">
                     <label className="text-[11px] font-medium text-foreground/45 tracking-wider uppercase">Last name</label>
-                    <input type="text" placeholder="Your last name" className="w-full bg-foreground/[0.04] border border-foreground/10 rounded-lg py-3 px-3.5 font-body text-sm text-foreground placeholder:text-foreground/25 outline-none transition-all focus:border-primary/50 focus:bg-primary/[0.05]" />
+                    <input type="text" placeholder="Your last name" value={formData.lastName} onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))} className="w-full bg-foreground/[0.04] border border-foreground/10 rounded-lg py-3 px-3.5 font-body text-sm text-foreground placeholder:text-foreground/25 outline-none transition-all focus:border-primary/50 focus:bg-primary/[0.05]" />
                   </div>
                 </div>
                 <div className="flex flex-col gap-[7px] mb-3.5">
                   <label className="text-[11px] font-medium text-foreground/45 tracking-wider uppercase">Email address</label>
-                  <input type="email" placeholder="you@email.com" className="w-full bg-foreground/[0.04] border border-foreground/10 rounded-lg py-3 px-3.5 font-body text-sm text-foreground placeholder:text-foreground/25 outline-none transition-all focus:border-primary/50 focus:bg-primary/[0.05]" />
+                  <input type="email" placeholder="you@email.com" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} className="w-full bg-foreground/[0.04] border border-foreground/10 rounded-lg py-3 px-3.5 font-body text-sm text-foreground placeholder:text-foreground/25 outline-none transition-all focus:border-primary/50 focus:bg-primary/[0.05]" />
                 </div>
                 <div className="flex flex-col gap-[7px] mb-3.5">
                   <label className="text-[11px] font-medium text-foreground/45 tracking-wider uppercase">Subject</label>
-                  <select className="w-full bg-foreground/[0.04] border border-foreground/10 rounded-lg py-3 px-3.5 font-body text-sm text-foreground outline-none transition-all focus:border-primary/50 focus:bg-primary/[0.05] cursor-pointer appearance-none h-[46px]">
+                  <select value={formData.subject} onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))} className="w-full bg-foreground/[0.04] border border-foreground/10 rounded-lg py-3 px-3.5 font-body text-sm text-foreground outline-none transition-all focus:border-primary/50 focus:bg-primary/[0.05] cursor-pointer appearance-none h-[46px]">
                     <option value="">Select a topic</option>
                     <option>Booking inquiry</option>
                     <option>Cancellation & refund</option>
@@ -256,13 +256,14 @@ const About = () => {
                 </div>
                 <div className="flex flex-col gap-[7px] mb-3.5">
                   <label className="text-[11px] font-medium text-foreground/45 tracking-wider uppercase">Message</label>
-                  <textarea placeholder="How can we help you?" className="w-full bg-foreground/[0.04] border border-foreground/10 rounded-lg py-3 px-3.5 font-body text-sm text-foreground placeholder:text-foreground/25 outline-none transition-all focus:border-primary/50 focus:bg-primary/[0.05] resize-y min-h-[120px] leading-relaxed" />
+                  <textarea placeholder="How can we help you?" value={formData.message} onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))} className="w-full bg-foreground/[0.04] border border-foreground/10 rounded-lg py-3 px-3.5 font-body text-sm text-foreground placeholder:text-foreground/25 outline-none transition-all focus:border-primary/50 focus:bg-primary/[0.05] resize-y min-h-[120px] leading-relaxed" />
                 </div>
                 <button
-                  onClick={() => setFormSubmitted(true)}
-                  className="w-full py-4 bg-primary text-foreground border-none rounded-lg font-body text-[15px] font-medium cursor-pointer transition-all hover:bg-sky-light hover:-translate-y-px mt-5 flex items-center justify-center gap-2"
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  className="w-full py-4 bg-primary text-foreground border-none rounded-lg font-body text-[15px] font-medium cursor-pointer transition-all hover:bg-sky-light hover:-translate-y-px mt-5 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Send message →
+                  {submitting ? "Sending..." : "Send message →"}
                 </button>
               </>
             )}
