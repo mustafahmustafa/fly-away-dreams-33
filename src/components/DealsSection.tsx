@@ -77,9 +77,11 @@ const DealsSection = () => {
                   className="group block bg-foreground/[0.03] border border-foreground/[0.07] rounded-[22px] overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-primary/35 hover:bg-primary/[0.06] no-underline"
                 >
                   <div className="h-40 relative overflow-hidden">
-                    <div
-                      className="w-full h-full transition-transform duration-400 group-hover:scale-105"
-                      style={{ background: CITY_GRADIENTS[deal.city] || DEFAULT_GRADIENT }}
+                    <img
+                      src={getCityImageUrl(deal.destination)}
+                      alt={deal.city}
+                      className="w-full h-full object-cover transition-transform duration-400 group-hover:scale-105"
+                      loading="lazy"
                     />
                     <div
                       className="absolute inset-0"
