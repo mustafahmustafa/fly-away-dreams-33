@@ -91,6 +91,44 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (action === "autocomplete") {
+      const term = (url.searchParams.get("term") || "").toLowerCase();
+      if (term.length < 1) {
+        return new Response(JSON.stringify({ suggestions: [] }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const hotelMatches = POPULAR_HOTELS
+        .filter(h => h.name.toLowerCase().includes(term))
+        .slice(0, 5)
+        .map(h => ({ type: "hotel" as const, label: h.name, sublabel: `${h.city}, ${h.country}`, value: h.name }));
+
+      const citySet = new Map<string, HotelEntry>();
+      POPULAR_HOTELS.forEach(h => {
+        if (h.city.toLowerCase().includes(term) && !citySet.has(h.city)) {
+          citySet.set(h.city, h);
+        }
+      });
+      const cityMatches = [...citySet.values()].slice(0, 4).map(h => ({
+        type: "city" as const, label: h.city, sublabel: h.country, value: h.city,
+      }));
+
+      const countrySet = new Map<string, string>();
+      POPULAR_HOTELS.forEach(h => {
+        if (h.country.toLowerCase().includes(term) && !countrySet.has(h.country)) {
+          countrySet.set(h.country, h.country);
+        }
+      });
+      const countryMatches = [...countrySet.values()].slice(0, 3).map(c => ({
+        type: "country" as const, label: c, sublabel: "", value: c,
+      }));
+
+      return new Response(JSON.stringify({ suggestions: [...cityMatches, ...hotelMatches, ...countryMatches] }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     return new Response(JSON.stringify({ error: "Invalid action" }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
