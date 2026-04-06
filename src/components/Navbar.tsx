@@ -10,7 +10,7 @@ interface NavbarConfig {
 const Navbar = () => {
   const location = useLocation();
   const { data: config } = useSiteConfig<NavbarConfig>("navbar");
-  const c = config ?? { links: [{ label: "Flights", path: "/" }, { label: "Hotels", path: "/" }, { label: "Deals", path: "/deals" }, { label: "About", path: "/about" }], cta_text: "Book a trip" };
+  const c = config ?? { links: [{ label: "Flights", path: "/" }, { label: "Hotels", path: "/hotels" }, { label: "Deals", path: "/deals" }, { label: "About", path: "/about" }], cta_text: "Book a trip" };
 
   return (
     <nav className="sticky top-0 z-50 flex items-center justify-between px-5 md:px-10 h-[68px] bg-[rgba(5,10,26,0.82)] backdrop-blur-xl border-b border-foreground/[0.06]">
