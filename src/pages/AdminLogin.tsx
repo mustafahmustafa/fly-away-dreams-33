@@ -15,12 +15,17 @@ const AdminLogin = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const { error } = await signIn(email, password);
-    if (error) {
-      setError(error.message);
+    try {
+      const { error } = await signIn(email, password);
+      if (error) {
+        setError(error.message);
+      } else {
+        navigate("/admin");
+      }
+    } catch {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
       setLoading(false);
-    } else {
-      navigate("/admin");
     }
   };
 

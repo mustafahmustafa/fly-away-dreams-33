@@ -31,6 +31,7 @@ const CTASection = () => {
       }
     } else {
       setSubmitted(true);
+      setEmail("");
     }
   };
 
