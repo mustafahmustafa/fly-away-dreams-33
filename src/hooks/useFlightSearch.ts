@@ -55,6 +55,7 @@ export function useFlightSearch(): UseFlightSearchReturn {
       // We must track the global offset so ticket indexes remain valid.
       let globalLegs: FlightLeg[] = [];
       let allTickets: Ticket[] = [];
+      const knownTicketIds = new Set<string>();
       let allAirlines: Record<string, Airline> = {};
       let allAgents: Record<string, Agent> = {};
       let lastTimestamp = 0;
@@ -80,8 +81,8 @@ export function useFlightSearch(): UseFlightSearchReturn {
 
           // Append new tickets (they reference the cumulative flight_legs array)
           if (data.tickets && data.tickets.length > 0) {
-            const existingIds = new Set(allTickets.map((t) => t.id));
-            const newTickets = data.tickets.filter((t) => !existingIds.has(t.id));
+            const newTickets = data.tickets.filter((t) => !knownTicketIds.has(t.id));
+            for (const t of newTickets) knownTicketIds.add(t.id);
             allTickets = [...allTickets, ...newTickets];
             setTickets(allTickets);
           }
