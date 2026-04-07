@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { type Ticket, type FlightLeg, type Airline, type Agent } from "@/lib/flightSearchApi";
 import { Plane, Clock, Luggage } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -309,4 +309,4 @@ const FlightResults = ({ tickets, flightLegs, airlines, agents, searching, progr
   );
 };
 
-export default FlightResults;
+export default React.memo(FlightResults);

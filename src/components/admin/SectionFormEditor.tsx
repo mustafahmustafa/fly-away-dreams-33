@@ -15,10 +15,10 @@ interface Props {
 export default function SectionFormEditor({ sectionKey, sectionLabel }: Props) {
   const { data, isLoading } = useSiteConfig(sectionKey);
   const updateMutation = useUpdateSiteConfig();
-  const [formData, setFormData] = useState<any>(null);
+  const [formData, setFormData] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
-    if (data) setFormData(JSON.parse(JSON.stringify(data)));
+    if (data) setFormData(structuredClone(data) as Record<string, unknown>);
   }, [data]);
 
   if (isLoading || !formData) return <div className="text-foreground/50">Loading...</div>;
@@ -34,85 +34,72 @@ export default function SectionFormEditor({ sectionKey, sectionLabel }: Props) {
   };
 
   const handleReset = () => {
-    if (data) setFormData(JSON.parse(JSON.stringify(data)));
+    if (data) setFormData(structuredClone(data) as Record<string, unknown>);
   };
 
-  const update = (path: string, value: any) => {
-    setFormData((prev: any) => {
-      const next = JSON.parse(JSON.stringify(prev));
-      const keys = path.split(".");
-      let obj = next;
-      for (let i = 0; i < keys.length - 1; i++) {
-        obj = obj[keys[i]];
-      }
-      obj[keys[keys.length - 1]] = value;
-      return next;
+  const deepSet = (obj: Record<string, unknown>, keys: string[], value: unknown): Record<string, unknown> => {
+    if (keys.length === 0) return obj;
+    const [head, ...rest] = keys;
+    const current = obj[head];
+    if (rest.length === 0) {
+      return { ...obj, [head]: value };
+    }
+    return { ...obj, [head]: deepSet((current as Record<string, unknown>) ?? {}, rest, value) };
+  };
+
+  const getNestedArray = (obj: Record<string, unknown>, path: string): unknown[] => {
+    const keys = path.split(".");
+    let result: unknown = obj;
+    for (const k of keys) result = (result as Record<string, unknown>)?.[k];
+    return Array.isArray(result) ? result : [];
+  };
+
+  const update = (path: string, value: unknown) => {
+    setFormData((prev: Record<string, unknown>) => deepSet(prev, path.split("."), value));
+  };
+
+  const updateArrayItem = (arrPath: string, index: number, field: string, value: unknown) => {
+    setFormData((prev: Record<string, unknown>) => {
+      const arr = [...getNestedArray(prev, arrPath)];
+      const item = { ...(arr[index] as Record<string, unknown>), [field]: value };
+      arr[index] = item;
+      return deepSet(prev, arrPath.split("."), arr);
     });
   };
 
-  const updateArrayItem = (arrPath: string, index: number, field: string, value: any) => {
-    setFormData((prev: any) => {
-      const next = JSON.parse(JSON.stringify(prev));
-      const keys = arrPath.split(".");
-      let arr = next;
-      for (const k of keys) arr = arr[k];
-      arr[index][field] = value;
-      return next;
-    });
-  };
-
-  const addArrayItem = (arrPath: string, template: any) => {
-    setFormData((prev: any) => {
-      const next = JSON.parse(JSON.stringify(prev));
-      const keys = arrPath.split(".");
-      let arr = next;
-      for (const k of keys) arr = arr[k];
-      arr.push(template);
-      return next;
+  const addArrayItem = (arrPath: string, template: Record<string, unknown>) => {
+    setFormData((prev: Record<string, unknown>) => {
+      const arr = [...getNestedArray(prev, arrPath), template];
+      return deepSet(prev, arrPath.split("."), arr);
     });
   };
 
   const removeArrayItem = (arrPath: string, index: number) => {
-    setFormData((prev: any) => {
-      const next = JSON.parse(JSON.stringify(prev));
-      const keys = arrPath.split(".");
-      let arr = next;
-      for (const k of keys) arr = arr[k];
-      arr.splice(index, 1);
-      return next;
+    setFormData((prev: Record<string, unknown>) => {
+      const arr = getNestedArray(prev, arrPath).filter((_, i) => i !== index);
+      return deepSet(prev, arrPath.split("."), arr);
     });
   };
 
   const updateStringArray = (arrPath: string, index: number, value: string) => {
-    setFormData((prev: any) => {
-      const next = JSON.parse(JSON.stringify(prev));
-      const keys = arrPath.split(".");
-      let arr = next;
-      for (const k of keys) arr = arr[k];
+    setFormData((prev: Record<string, unknown>) => {
+      const arr = [...getNestedArray(prev, arrPath)];
       arr[index] = value;
-      return next;
+      return deepSet(prev, arrPath.split("."), arr);
     });
   };
 
   const addStringArrayItem = (arrPath: string) => {
-    setFormData((prev: any) => {
-      const next = JSON.parse(JSON.stringify(prev));
-      const keys = arrPath.split(".");
-      let arr = next;
-      for (const k of keys) arr = arr[k];
-      arr.push("");
-      return next;
+    setFormData((prev: Record<string, unknown>) => {
+      const arr = [...getNestedArray(prev, arrPath), ""];
+      return deepSet(prev, arrPath.split("."), arr);
     });
   };
 
   const removeStringArrayItem = (arrPath: string, index: number) => {
-    setFormData((prev: any) => {
-      const next = JSON.parse(JSON.stringify(prev));
-      const keys = arrPath.split(".");
-      let arr = next;
-      for (const k of keys) arr = arr[k];
-      arr.splice(index, 1);
-      return next;
+    setFormData((prev: Record<string, unknown>) => {
+      const arr = getNestedArray(prev, arrPath).filter((_, i) => i !== index);
+      return deepSet(prev, arrPath.split("."), arr);
     });
   };
 

@@ -76,23 +76,34 @@ const About = () => {
     setSubmitting(true);
     try {
       const id = crypto.randomUUID();
-      await supabase.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "contact-notification",
-          recipientEmail: formData.email,
-          idempotencyKey: `contact-notify-${id}`,
-          templateData: formData,
-        },
-      });
-      await supabase.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "contact-confirmation",
-          recipientEmail: formData.email,
-          idempotencyKey: `contact-confirm-${id}`,
-          templateData: { firstName: formData.firstName },
-        },
-      });
-      setFormSubmitted(true);
+      const [notifyResult, confirmResult] = await Promise.allSettled([
+        supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "contact-notification",
+            recipientEmail: formData.email,
+            idempotencyKey: `contact-notify-${id}`,
+            templateData: formData,
+          },
+        }),
+        supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "contact-confirmation",
+            recipientEmail: formData.email,
+            idempotencyKey: `contact-confirm-${id}`,
+            templateData: { firstName: formData.firstName },
+          },
+        }),
+      ]);
+      const notifyFailed = notifyResult.status === "rejected" || notifyResult.value?.error;
+      const confirmFailed = confirmResult.status === "rejected" || confirmResult.value?.error;
+      if (notifyFailed && confirmFailed) {
+        toast.error("Failed to send message. Please try again.");
+      } else {
+        if (notifyFailed || confirmFailed) {
+          console.warn("One email send partially failed", { notifyResult, confirmResult });
+        }
+        setFormSubmitted(true);
+      }
     } catch (err) {
       console.error("Failed to send email:", err);
       toast.error("Failed to send message. Please try again.");
