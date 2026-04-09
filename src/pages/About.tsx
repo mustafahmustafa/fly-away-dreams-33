@@ -197,27 +197,6 @@ const About = () => {
         </div>
       </section>
 
-      {/* Team */}
-      <section className="py-16 px-5 md:px-10 bg-midnight-soft">
-        <div className="max-w-[1000px] mx-auto">
-          <div className="text-center mb-10">
-            <div className="text-[11px] font-semibold text-sky-light tracking-[0.12em] uppercase mb-3">{c.team.label}</div>
-            <h2 className="font-display text-[32px] font-extrabold text-foreground tracking-[-0.5px]">{c.team.title}</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {c.team.members.map((t) => (
-              <div key={t.name} className="bg-panel border border-foreground/[0.07] rounded-[18px] p-6 text-center transition-all hover:border-primary/25">
-                <div className={`w-14 h-14 rounded-full ${t.color} flex items-center justify-center font-display text-base font-bold text-foreground mx-auto mb-4`}>
-                  {t.initials}
-                </div>
-                <div className="font-display text-[15px] font-bold text-foreground mb-1">{t.name}</div>
-                <div className="text-xs text-foreground/45 mb-3">{t.role}</div>
-                <p className="text-xs font-light text-foreground/40 leading-relaxed">{t.bio}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Contact */}
       <section className="py-16 px-5 md:px-10 bg-midnight" id="contact">
